@@ -5,7 +5,12 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "com.xing_yu_dragon.timeheals.mixin.TimeHealsMixinPlugin",
   "mixins": [
-    "ChaosWeaponDamageMixin"
+    "ChaosWeaponDamageMixin",
+    "LivingEntityEffectAccess",
+    "WitherChaosEffectMixin",
+    "WitherBossBarAccess",
+    "EnderDragonChaosEffectMixin",
+    "EndDragonFightBarAccess"
   ],
   "injectors": {
     "defaultRequire": 1

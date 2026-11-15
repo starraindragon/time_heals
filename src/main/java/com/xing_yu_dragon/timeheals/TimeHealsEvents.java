@@ -66,11 +66,46 @@ public final class TimeHealsEvents {
         }
         if (victim instanceof Mob mob) {
             TimeEffects.TimeHealsLayers.stackOnHit(mob);
-            TRACKED.add(mob);
+            // 凋零这类生物 addEffect 恒返回 false，挂不上效果 → 改用兜底追踪
+            if (!mob.hasEffect(TimeEffects.TIME_CONFUSION)) {
+                TimeConfusionFallback.hit(mob);
+            } else {
+                TRACKED.add(mob);
+            }
         }
     }
 
 
+
+    /** 左键攻击：即使目标因无敌帧/免疫拒绝 hurt 事件，也先把时间混乱叠上。 */
+    @SubscribeEvent
+    public static void onAttackEntity(net.neoforged.neoforge.event.entity.player.AttackEntityEvent event) {
+        if (event.getTarget().level().isClientSide()) {
+            return;
+        }
+        Mob mob;
+        if (event.getTarget() instanceof Mob target) {
+            mob = target;
+        } else if (event.getTarget() instanceof net.neoforged.neoforge.entity.PartEntity<?> part
+                && part.getParent() instanceof Mob parent) {
+            // 末影龙这类多部位生物：准星命中的是部位，本体才是要处理的目标
+            mob = parent;
+        } else {
+            return;
+        }
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+        if (!isTimeWeapon(player.getMainHandItem())) {
+            return;
+        }
+        TimeEffects.TimeHealsLayers.stackOnHit(mob);
+        if (!mob.hasEffect(TimeEffects.TIME_CONFUSION)) {
+            TimeConfusionFallback.hit(mob);
+        } else {
+            TRACKED.add(mob);
+        }
+    }
 
     /** 调试命令：/timeaccel —— 给视线 10 格内的方块施加时间加速。 */
     @SubscribeEvent
@@ -121,6 +156,7 @@ public final class TimeHealsEvents {
         // 时间加速：每 tick 对加速中的方块补跑 tick
         for (var level : event.getServer().getAllLevels()) {
             TimeAcceleration.tick(level);
+            TimeConfusionFallback.tick(level);
         }
 
         if (TRACKED.isEmpty()) {

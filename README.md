@@ -13,7 +13,7 @@ Items are registered by the pack's KubeJS scripts; this mod only supplies what K
 chaotic damage detection, the Time Confusion effect, block-entity time acceleration,
 and an in-game GuideME guide.
 
-- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.0.0`
+- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.1.0`
 
 ---
 
@@ -131,7 +131,7 @@ accelerationDisplayRange = 5.0
 ./gradlew build
 ```
 
-产物：`build/libs/time_heals-1.0.0.jar`
+产物：`build/libs/time_heals-1.1.0.jar`
 
 ### dev 运行约定
 
@@ -160,6 +160,15 @@ runtimeOnly fileTree('devmods') { include '*.jar' }
 - 混沌守卫的晶体/守卫本身属于多部位实体，本模组不为其做特殊处理。
 
 ## 变更记录
+
+### 1.1.0
+
+- 新增：对**免疫 Mob 效果**的生物（凋零、末影龙）启用独立追踪器，
+  移速削减、定身、剥夺 AI 与每秒侵蚀同样生效；
+- 新增：Mixin 放行这两种 BOSS 的「时间混乱」效果，Jade 可正常显示；
+- 新增：锁 AI 期间手动接管 BOSS 血条（凋零 `bossEvent`、末影龙 `dragonEvent`）；
+- 新增：多部位实体识别（准星命中 `EnderDragonPart` 时取本体）；
+- 原因：两者的 `addEffect` 恒返回 `false`，且血条依赖自身 AI tick 更新。
 
 ### 1.0.0
 

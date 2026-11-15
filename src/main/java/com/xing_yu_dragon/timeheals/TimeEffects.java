@@ -111,9 +111,16 @@ public final class TimeEffects {
             double speedModifier = layer == 0 ? TimeHealsConfig.LAYER1_SPEED : -1.0D;
             applySpeed(mob, speedModifier);
 
-            // AI：只有第 3 层剥夺
+            // AI：第 2 层起剥夺（BOSS 也锁，冻结更彻底）
             if (layer >= 2) {
                 stripAi(mob);
+                // 末影龙的飞行是自定义逻辑，noAi 拦不住 → 每 tick 清零速度
+                if (mob instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon) {
+                    mob.setDeltaMovement(0.0D, 0.0D, 0.0D);
+                    mob.getNavigation().stop();
+                }
+                // 凋零的血条由它自己的 AI tick 更新，锁 AI 后会冻结 → 这里手动刷新
+                updateBossBar(mob);
                 // 环绕的时空粒子
                 if (mob.tickCount % 10 == 0) {
                     ambientLayer3(mob);
@@ -151,6 +158,27 @@ public final class TimeEffects {
             }
         }
 
+        /** 锁 AI 后凋零不会自己刷新血条，这里手动同步进度。 */
+        private static void updateBossBar(Mob mob) {
+            float progress = mob.getMaxHealth() <= 0.0F
+                    ? 0.0F
+                    : Math.max(0.0F, Math.min(1.0F, mob.getHealth() / mob.getMaxHealth()));
+            try {
+                if (mob instanceof net.minecraft.world.entity.boss.wither.WitherBoss wither) {
+                    ((com.xing_yu_dragon.timeheals.mixin.WitherBossBarAccess) wither)
+                            .timeHeals$getBossEvent().setProgress(progress);
+                } else if (mob instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon) {
+                    var fight = dragon.getDragonFight();
+                    if (fight != null) {
+                        ((com.xing_yu_dragon.timeheals.mixin.EndDragonFightBarAccess) fight)
+                                .timeHeals$getDragonEvent().setProgress(progress);
+                    }
+                }
+            } catch (Throwable ignored) {
+                // 没有血条或映射不同，忽略
+            }
+        }
+
         private static void stripAi(Mob mob) {
             if (!mob.isNoAi()) {
                 mob.setNoAi(true);
@@ -178,7 +206,8 @@ public final class TimeEffects {
                 return;
             }
             erosionFeedback(mob);
-            float remaining = mob.getHealth() - damage;
+            float before = mob.getHealth();
+            float remaining = before - damage;
             if (remaining > 0.0F) {
                 mob.setHealth(remaining);
             } else {
@@ -275,7 +304,6 @@ public final class TimeEffects {
             MobEffectInstance current = mob.getEffect(TIME_CONFUSION);
             int nextLayer = current == null ? 0 : Math.min(2, current.getAmplifier() + 1);
             int duration = TimeHealsConfig.LAYER_DURATION_TICKS[nextLayer];
-            TimeHeals.LOGGER.debug("[时间混乱] {} 叠层 -> {}", mob.getName().getString(), nextLayer + 1);
             mob.addEffect(new MobEffectInstance(TIME_CONFUSION, duration, nextLayer, false, true, true));
             maintain(mob, nextLayer);
         }

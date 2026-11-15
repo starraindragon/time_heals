@@ -3,12 +3,7 @@ package com.xing_yu_dragon.timeheals.client;
 import com.xing_yu_dragon.timeheals.TimeHeals;
 
 import guideme.Guide;
-import guideme.Guides;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 /**
  * 注册 GuideME 指南。
@@ -18,14 +13,19 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  *
  * <p>注册时机很关键：必须早于资源重载的 prepare 阶段（GuideME 那时就扫描完页面了），
  * 所以由 {@code TimeHeals} 构造时调用 {@link #register()}，而不是 FMLClientSetupEvent。
+ *
+ * <p>注意：
+ * <ul>
+ *   <li>本类<b>不能</b>加 {@code @EventBusSubscriber}——它没有任何 {@code @SubscribeEvent}
+ *       方法，NeoForge 自动注册时会抛「has no @SubscribeEvent methods」并让模组进入损坏状态；</li>
+ *   <li>不要在客户端 tick 里访问 {@code Guide#getPages()}，资源重载完成前会抛
+ *       「Pages are not loaded yet」。</li>
+ * </ul>
  */
-@EventBusSubscriber(modid = TimeHeals.MODID, value = Dist.CLIENT)
 public final class TimeGuide {
 
     private static final ResourceLocation GUIDE_ID =
             ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "guide");
-
-    private static boolean loggedPages;
 
     private TimeGuide() {
     }
@@ -37,26 +37,5 @@ public final class TimeGuide {
                 .startPage(ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "index.md"))
                 .build();
         TimeHeals.LOGGER.info("[time_heals] 指南已注册: {}（悬停物品长按 G 打开）", guide.getId());
-    }
-
-    /** 临时诊断：进入世界后打印一次页面数量。 */
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
-        if (loggedPages) {
-            return;
-        }
-        loggedPages = true;
-        Guide guide = Guides.getById(GUIDE_ID);
-        if (guide == null) {
-            TimeHeals.LOGGER.warn("[time_heals] 指南未注册！");
-            return;
-        }
-        TimeHeals.LOGGER.info("[time_heals] 指南页面数={}，列表={}", guide.getPages().size(),
-                guide.getPages().stream().map(page -> page.getId().toString()).toList());
-        var itemIndex = guide.getIndex(guideme.indices.ItemIndex.class);
-        if (itemIndex != null) {
-            TimeHeals.LOGGER.info("[time_heals] 物品索引 time_sword -> {}",
-                    itemIndex.get(ResourceLocation.fromNamespaceAndPath("kubejs", "time_sword")));
-        }
     }
 }

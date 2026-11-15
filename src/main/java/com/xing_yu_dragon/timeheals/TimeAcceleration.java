@@ -74,7 +74,6 @@ public final class TimeAcceleration {
     /** 由网络包调用：对指定方块施加/续期时间加速。 */
     public static boolean tryUse(ServerLevel serverLevel, Player player, BlockPos pos) {
         ResourceLocation heldId = itemId(player.getMainHandItem());
-        TimeHeals.LOGGER.info("[时间加速] 请求: pos={}, 主手={}", pos, heldId);
         if (heldId == null || !TimeHealsConfig.isAccelerationWeapon(heldId.toString())) {
             return false;
         }
@@ -83,8 +82,6 @@ public final class TimeAcceleration {
         BlockState state = serverLevel.getBlockState(pos);
         BlockEntity blockEntity = serverLevel.getBlockEntity(pos);
         boolean valid = isValidTarget(serverLevel, state, blockEntity);
-        TimeHeals.LOGGER.info("[时间加速] 目标检查: state={}, be={}, 有效={}",
-                state.getBlock(), blockEntity == null ? "无" : blockEntity.getType(), valid);
         if (!valid) {
             return false;
         }
@@ -137,7 +134,6 @@ public final class TimeAcceleration {
         ACCELERATED.put(key, new State(multiplier, expire, current == null ? null : current.display()));
         Display.TextDisplay display = ensureDisplay(level, key, current, multiplier, expire, now);
         ACCELERATED.put(key, new State(multiplier, expire, display));
-        TimeHeals.LOGGER.info("[时间加速] 调试施加: {} ×{}", pos, multiplier);
         return true;
     }
 
@@ -228,7 +224,6 @@ public final class TimeAcceleration {
             display.getPersistentData().putLong("time_heals_accel_pos", key.pos().asLong());
             display.setPos(key.pos().getX() + 0.5D, key.pos().getY() + 1.25D, key.pos().getZ() + 0.5D);
             level.addFreshEntity(display);
-            TimeHeals.LOGGER.info("[时间加速] 生成悬浮文字 @ {} ({})", key.pos(), multiplier);
         }
         updateDisplay(level, key, display, multiplier, expire, now);
         return display;
@@ -276,7 +271,6 @@ public final class TimeAcceleration {
         boolean active = ACCELERATED.keySet().stream()
                 .anyMatch(key -> key.pos().equals(target) && key.dimension().equals(display.level().dimension()));
         if (!active) {
-            TimeHeals.LOGGER.info("[时间加速] 清理残留悬浮文字 @ {}", target);
             display.discard();
         }
     }
