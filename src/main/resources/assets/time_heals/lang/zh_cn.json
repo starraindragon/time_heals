@@ -1,0 +1,13 @@
+{
+  "effect.time_heals.time_confusion": "时间混乱",
+  "effect.time_heals.time_confusion.desc": "I：移速 -30%，受到伤害 +10%（10 秒）；II：无法移动，受到伤害再 +20%（30 秒）；III：剥夺 AI，每秒损失 10% 当前生命（60 秒）",
+  "death.attack.time_erosion": "%1$s 被时间侵蚀吞噬",
+  "message.time_heals.barrier_breaking": "%s 时间屏障正损坏",
+  "message.time_heals.erosion": "%s 正在遭受时间侵蚀",
+  "subtitles.time_heals.time_erosion": "时间侵蚀",
+  "subtitles.time_heals.time_barrier_break": "时间屏障正损坏",
+  "message.time_heals.accelerate": "时间加速：×%s（剩余 %s 秒）",
+  "message.time_heals.need_crystal": "缺少时间水晶",
+  "key.time_heals.category": "Time Heals",
+  "key.time_heals.accelerate": "时间加速（对准机器按下）"
+}

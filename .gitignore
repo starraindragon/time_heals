@@ -1,0 +1,12 @@
+.gradle/
+build/
+out/
+run/
+devmods/
+*.iml
+.idea/
+.vscode/
+logs/
+*.log
+err*.txt
+_preview_*.html

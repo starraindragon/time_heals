@@ -1,0 +1,14 @@
+{
+  "time_erosion": {
+    "subtitle": "subtitles.time_heals.time_erosion",
+    "sounds": [
+      "time_heals:effect/time_erosion"
+    ]
+  },
+  "time_barrier_break": {
+    "subtitle": "subtitles.time_heals.time_barrier_break",
+    "sounds": [
+      "time_heals:effect/time_barrier_break"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "effect.time_heals.time_confusion": "Time Confusion",
+  "death.attack.time_erosion": "%1$s was devoured by time erosion",
+  "message.time_heals.barrier_breaking": "%s's time barrier is breaking",
+  "message.time_heals.erosion": "%s is being eroded by time",
+  "subtitles.time_heals.time_erosion": "Time Erosion",
+  "subtitles.time_heals.time_barrier_break": "Time Barrier Breaking",
+  "message.time_heals.accelerate": "Time acceleration: x%s (%s s remaining)",
+  "message.time_heals.need_crystal": "Missing time crystal",
+  "key.time_heals.category": "Time Heals",
+  "key.time_heals.accelerate": "Time Acceleration"
+}

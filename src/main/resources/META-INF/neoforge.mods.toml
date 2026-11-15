@@ -1,0 +1,40 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="AGPL-3.0-or-later"
+
+[[mods]]
+modId="time_heals"
+version="1.0.0"
+displayName="Time Heals"
+authors="xing_yu_dragon"
+description='''
+时间系装备扩展模组。
+'''
+
+[[mixins]]
+config="time_heals.mixins.json"
+
+[[dependencies.time_heals]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1.248,)"
+
+[[dependencies.time_heals]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,1.22)"
+
+# 龙之进化：可选依赖。检测到才启用混沌伤害相关逻辑，
+# 没有它时模组本体仍可加载（只保留与 DE 无关的功能）。
+[[dependencies.time_heals]]
+    modId="draconicevolution"
+    type="optional"
+    versionRange="[3.1.4,)"
+    ordering="AFTER"
+
+# GuideME：内置说明文档（AE2 指南同款框架），可选
+[[dependencies.time_heals]]
+    modId="guideme"
+    type="optional"
+    versionRange="[21.1.0,)"
+    ordering="AFTER"
