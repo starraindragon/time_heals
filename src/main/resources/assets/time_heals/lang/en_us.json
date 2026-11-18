@@ -16,5 +16,6 @@
   "subtitles.time_heals.verdict_lock": "Temporal Verdict Device: locking on",
   "subtitles.time_heals.verdict_attack": "Temporal Verdict Device: attacking",
   "subtitles.time_heals.verdict_done": "Temporal Verdict Device: verdict",
-  "subtitles.time_heals.crystal_explode": "Chaos Crystal: explodes"
+  "subtitles.time_heals.crystal_explode": "Chaos Crystal: explodes",
+  "message.time_heals.need_time_crystal": "Hold Time Crystals to activate"
 }

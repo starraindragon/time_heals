@@ -81,10 +81,34 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device) {
-            device.startDemo();
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device) {
+            startRitual(level, device, player);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /** 手持时间水晶才能启动；启动逻辑由控制器与结构块共用。 */
+    public static void startRitual(Level level, VerdictDeviceBlockEntity device, Player player) {
+        if (device.isRunning()) {
+            return;
+        }
+        if (!isTimeCrystal(player.getMainHandItem())) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                    "message.time_heals.need_time_crystal"), true);
+            return;
+        }
+        device.startRitual();
+    }
+
+    private static boolean isTimeCrystal(net.minecraft.world.item.ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()
+                .equals("kubejs:time_crystal");
     }
 
     @Override

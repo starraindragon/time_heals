@@ -41,11 +41,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     /** 攻击阶段时长（tick）：5 tick，尖啸音波从水晶飞到目标。 */
     public static final int ATTACK_TICKS = 5;
     /** 蓄能结束后的收尾时间（tick）。 */
-    public static final int DEMO_TAIL = 40;
+    public static final int TAIL_TICKS = 40;
     /** 演示总时长 = 破晶阶段 + 蓄能 + 收尾，全部由各阶段时长推导。 */
-    public static final int DEMO_TICKS =
+    public static final int RITUAL_TICKS =
             CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + LOCK_TICKS
-                    + ATTACK_TICKS + DEMO_TAIL;
+                    + ATTACK_TICKS + TAIL_TICKS;
     /** 阶段常量。 */
     public static final int PHASE_IDLE = 0;
     public static final int PHASE_LOCK = 1;
@@ -177,9 +177,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         return remainingTicks > 0;
     }
 
-    /** 右键启动一次演示仪式。 */
-    public void startDemo() {
-        this.remainingTicks = DEMO_TICKS;
+    /** 消耗时间水晶启动仪式。 */
+    public void startRitual() {
+        this.remainingTicks = RITUAL_TICKS;
         this.elapsedTicks = 0;
         this.resetTicks = 0;
         this.progress = 0.0F;
