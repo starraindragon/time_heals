@@ -30,18 +30,21 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final int RING_LAYERS = 14;
     /** 两次破晶之间的间隔（tick）：2.5 秒，保证单个特效能完整演完。 */
     public static final int CRYSTAL_INTERVAL = 50;
+    /** 锁定期时长（tick）：5 秒，中央水晶向混沌守卫发射追踪粒子束。 */
+    public static final int LOCK_TICKS = 100;
     /** 蓄能期时长（tick）：5 秒，柱子向核心发射粒子束。 */
     public static final int CHARGE_TICKS = 100;
     /** 蓄能结束后的收尾时间（tick）。 */
     public static final int DEMO_TAIL = 40;
     /** 演示总时长 = 破晶阶段 + 蓄能 + 收尾，全部由各阶段时长推导。 */
     public static final int DEMO_TICKS =
-            CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + DEMO_TAIL;
+            LOCK_TICKS + CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + DEMO_TAIL;
     /** 阶段常量。 */
     public static final int PHASE_IDLE = 0;
-    public static final int PHASE_BREAK = 1;
-    public static final int PHASE_CHARGE = 2;
-    public static final int PHASE_DONE = 3;
+    public static final int PHASE_LOCK = 1;
+    public static final int PHASE_BREAK = 2;
+    public static final int PHASE_CHARGE = 3;
+    public static final int PHASE_DONE = 4;
 
     /** 0 = 待机，后续接入锁定/破晶/蓄能/裁决/收尾。 */
     private int phase = 0;
@@ -53,6 +56,12 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     private int crystalRings = 0;
     /** 仪式已进行的 tick，用于圆环旋转相位。 */
     private int ritualTime = 0;
+    /** 锁定的混沌守卫（UUID）；没有目标时为空。 */
+    private java.util.UUID targetUuid = null;
+    /** 瞄准点（相对方块坐标，客户端渲染用）。 */
+    private float aimX, aimY, aimZ;
+    private boolean hasAim = false;
+
     /** 已进行 tick。 */
     private int elapsedTicks = 0;
     /** 剩余演示 tick；>0 表示仪式进行中。 */
@@ -94,6 +103,49 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         return crystalRings;
     }
 
+    public boolean hasAim() {
+        return hasAim;
+    }
+
+    public float getAimX() {
+        return aimX;
+    }
+
+    public float getAimY() {
+        return aimY;
+    }
+
+    public float getAimZ() {
+        return aimZ;
+    }
+
+    /** 锁定期：找到混沌守卫并把瞄准点同步到客户端。 */
+    private void updateAim() {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        net.minecraft.world.entity.Entity target = null;
+        if (targetUuid != null) {
+            target = server.getEntity(targetUuid);
+        }
+        if (target == null || !target.isAlive()) {
+            target = server.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
+                            new net.minecraft.world.phys.AABB(worldPosition).inflate(64.0D),
+                            e -> e.getType().builtInRegistryHolder().key().location().toString()
+                                    .equals("draconicevolution:chaos_guardian"))
+                    .stream().findFirst().orElse(null);
+            targetUuid = target == null ? null : target.getUUID();
+        }
+        if (target == null) {
+            hasAim = false;
+            return;
+        }
+        aimX = (float) (target.getX() - (worldPosition.getX() + 0.5D));
+        aimY = (float) (target.getY() + target.getBbHeight() * 0.5D - worldPosition.getY());
+        aimZ = (float) (target.getZ() - (worldPosition.getZ() + 0.5D));
+        hasAim = true;
+    }
+
     public boolean isRunning() {
         return remainingTicks > 0;
     }
@@ -128,13 +180,18 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 onCrystalBroken();
             }
 
-            // 阶段推进：破晶 14 层 → 蓄能 5 秒 → 收尾
-            int breakSpan = CRYSTAL_INTERVAL * RING_LAYERS;
-            int chargeEnd = breakSpan + CHARGE_TICKS;
+            // 阶段推进：锁定 5 秒 → 破晶 14 层 → 蓄能 5 秒 → 收尾
+            int lockEnd = LOCK_TICKS;
+            int breakEnd = lockEnd + CRYSTAL_INTERVAL * RING_LAYERS;
+            int chargeEnd = breakEnd + CHARGE_TICKS;
             int newPhase;
-            if (elapsedTicks <= breakSpan) {
+            if (elapsedTicks <= lockEnd) {
+                newPhase = PHASE_LOCK;
+                progress = 0.0F;
+                updateAim();
+            } else if (elapsedTicks <= breakEnd) {
                 newPhase = PHASE_BREAK;
-                progress = Math.min(1.0F, elapsedTicks / (float) breakSpan);
+                progress = (elapsedTicks - lockEnd) / (float) (breakEnd - lockEnd);
             } else if (elapsedTicks <= chargeEnd) {
                 newPhase = PHASE_CHARGE;
                 progress = 1.0F;
@@ -252,6 +309,10 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         crystalsBroken = tag.getInt("crystals");
         progress = tag.getFloat("progress");
         crystalRings = tag.getInt("rings");
+        hasAim = tag.getBoolean("hasAim");
+        aimX = tag.getFloat("aimX");
+        aimY = tag.getFloat("aimY");
+        aimZ = tag.getFloat("aimZ");
         remainingTicks = tag.getInt("remaining");
         resetTicks = tag.getInt("reset");
     }
@@ -264,6 +325,10 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         tag.putInt("phase", phase);
         tag.putInt("crystals", crystalsBroken);
         tag.putInt("rings", crystalRings);
+        tag.putBoolean("hasAim", hasAim);
+        tag.putFloat("aimX", aimX);
+        tag.putFloat("aimY", aimY);
+        tag.putFloat("aimZ", aimZ);
         return tag;
     }
 

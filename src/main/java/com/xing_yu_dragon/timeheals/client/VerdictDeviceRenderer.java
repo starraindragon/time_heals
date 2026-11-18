@@ -126,8 +126,61 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
 
         drawProgressRing(pose, buffers, be.getProgress(), time);
         drawPillarRings(pose, buffers, be.getCrystalRings(), time);
+        if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_LOCK && be.hasAim()) {
+            drawLockBeam(pose, buffers, be.getAimX(), be.getAimY(), be.getAimZ(), time);
+        }
         if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_CHARGE) {
             drawChargeBeams(pose, buffers, time);
+        }
+    }
+
+    /** 锁定期：中央水晶向被锁定的混沌守卫发射追踪光束（reactor_energy_beam 风格）。 */
+    private static void drawLockBeam(PoseStack pose, MultiBufferSource buffers,
+                                     float aimX, float aimY, float aimZ, float time) {
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityTranslucent(GLOW));
+        Matrix4f mat = pose.last().pose();
+
+        // 起点：中央水晶中心（模型单位）
+        float sx = 8.0F, sy = 20.0F, sz = 8.0F;
+        // 终点：目标（相对方块，转成模型单位）
+        float ex = aimX * 16.0F, ey = aimY * 16.0F, ez = aimZ * 16.0F;
+
+        // 亮线本体
+        int seg = 40;
+        float pulse = 0.7F + 0.3F * Mth.sin(time * 0.5F);
+        int lr = (int) (150 * pulse + 60);
+        int lg = (int) (245 * pulse + 10);
+        int lb = (int) (235 * pulse + 20);
+        for (int i = 0; i < seg; i++) {
+            float t0 = i / (float) seg;
+            float t1 = (i + 1) / (float) seg;
+            float x0 = Mth.lerp(t0, sx, ex), y0 = Mth.lerp(t0, sy, ey), z0 = Mth.lerp(t0, sz, ez);
+            float x1 = Mth.lerp(t1, sx, ex), y1 = Mth.lerp(t1, sy, ey), z1 = Mth.lerp(t1, sz, ez);
+            float w = 0.035F * 16.0F;
+            coloredQuad(vc, mat, x0, y0 + w, z0, x1, y1 + w, z1, x1, y1 - w, z1, x0, y0 - w, z0,
+                    lr, lg, lb, 150, 0.0F, 1.0F, 0.0F);
+            coloredQuad(vc, mat, x0 + w, y0, z0, x1 + w, y1, z1, x1 - w, y1, z1, x0 - w, y0, z0,
+                    lr, lg, lb, 110, 0.0F, 0.0F, 1.0F);
+        }
+
+        // 沿光束流动的粒子
+        int points = 28;
+        for (int i = 0; i < points; i++) {
+            float t = (i / (float) points + time * 0.12F) % 1.0F;
+            float x = Mth.lerp(t, sx, ex);
+            float y = Mth.lerp(t, sy, ey) + Mth.sin(time * 0.25F + i) * 0.3F;
+            float z = Mth.lerp(t, sz, ez);
+            glowCross(vc, mat, x, y, z, 0.05F * 16.0F, 255, 255, 255, 235);
+        }
+
+        // 目标处的命中光点
+        for (int i = 0; i < 6; i++) {
+            double a = time * 0.3F + i * (Math.PI * 2 / 6);
+            glowCross(vc, mat,
+                    ex + (float) (Math.cos(a) * 1.2F),
+                    ey + Mth.sin(time * 0.5F + i) * 0.8F,
+                    ez + (float) (Math.sin(a) * 1.2F),
+                    0.06F * 16.0F, 255, 180, 120, 240);
         }
     }
 
