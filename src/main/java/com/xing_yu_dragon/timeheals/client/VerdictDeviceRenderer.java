@@ -59,6 +59,15 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
     private static final float PIVOT_X = 8.0F;
     private static final float PIVOT_Z = 8.0F;
 
+    /** 底盘进度槽：外沿半宽 22、槽宽 2、贴合在 y=2 的槽底上。 */
+    private static final float RING_OUTER = 22.0F;
+    private static final float RING_WIDTH = 2.0F;
+    private static final float RING_Y = 2.06F;
+    private static final int RING_SEGMENTS = 64;
+    /** 进度槽用纯白发光贴图 + 顶点颜色染色。 */
+    private static final ResourceLocation GLOW =
+            ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "textures/block/verdict_device/glow.png");
+
     private static List<Part> parts;
     private static final Map<String, RenderType> RENDER_TYPES = new ConcurrentHashMap<>();
     /** 全亮光照（0xF000F0）。 */
@@ -114,6 +123,79 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
             }
             pose.popPose();
         }
+
+        drawProgressRing(pose, buffers, be.getProgress(), time);
+    }
+
+    /** 底盘的进度环：按进度逐段点亮，颜色由绿过渡到红。 */
+    private static void drawProgressRing(PoseStack pose, MultiBufferSource buffers, float progress, float time) {
+        if (progress <= 0.0F) {
+            return;
+        }
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityTranslucent(GLOW));
+        Matrix4f mat = pose.last().pose();
+        int alpha = 180 + (int) (60.0F * Math.abs(Mth.sin(time / 10.0F)));
+
+        for (int i = 0; i < RING_SEGMENTS; i++) {
+            float t0 = i / (float) RING_SEGMENTS;
+            if (t0 >= progress) {
+                break;
+            }
+            float t1 = Math.min((i + 1) / (float) RING_SEGMENTS, progress);
+            float[] c = lerpColor(0.22F, 1.0F, t1);
+            int r = (int) (c[0] * 255);
+            int g = (int) (c[1] * 255);
+            int b = (int) (c[2] * 255);
+            quadRingSegment(vc, mat, t0, t1, r, g, b, alpha);
+        }
+    }
+
+    /** 绿(0x38d39f) → 红(0xff3b30) 的插值。 */
+    private static float[] lerpColor(float from, float to, float t) {
+        float k = (t - from) / (to - from);
+        k = Mth.clamp(k, 0.0F, 1.0F);
+        float g0 = 0.83F, b0 = 0.62F, r0 = 0.22F;   // #38d39f
+        float g1 = 0.23F, b1 = 0.19F, r1 = 1.00F;   // #ff3b30
+        return new float[]{Mth.lerp(k, r0, r1), Mth.lerp(k, g0, g1), Mth.lerp(k, b0, b1)};
+    }
+
+    /** 矩形环上的参数点：u ∈ [0,1) 顺时针一圈；inward=true 取内沿。
+     *  坐标以模型中心 (8, 8) 为原点，所以整体要加 8。 */
+    private static Vec3 ringPoint(float u, boolean inward) {
+        float half = inward ? RING_OUTER - RING_WIDTH : RING_OUTER;
+        u = u - (float) Math.floor(u);
+        float t = u * 4.0F;
+        int side = (int) t;
+        float f = t - side;
+        float cx = 8.0F, cz = 8.0F;
+        return switch (side) {
+            case 0 -> new Vec3(cx - half + 2 * half * f, RING_Y, cz - half);   // 北边：x 向右
+            case 1 -> new Vec3(cx + half, RING_Y, cz - half + 2 * half * f);   // 东边：z 向前
+            case 2 -> new Vec3(cx + half - 2 * half * f, RING_Y, cz + half);   // 南边：x 向左
+            default -> new Vec3(cx - half, RING_Y, cz + half - 2 * half * f);  // 西边：z 向后
+        };
+    }
+
+    private static void quadRingSegment(VertexConsumer vc, Matrix4f mat, float t0, float t1,
+                                        int r, int g, int b, int alpha) {
+        Vec3 o0 = ringPoint(t0, false);
+        Vec3 o1 = ringPoint(t1, false);
+        Vec3 i1 = ringPoint(t1, true);
+        Vec3 i0 = ringPoint(t0, true);
+        coloredVertex(vc, mat, o0, r, g, b, alpha);
+        coloredVertex(vc, mat, o1, r, g, b, alpha);
+        coloredVertex(vc, mat, i1, r, g, b, alpha);
+        coloredVertex(vc, mat, i0, r, g, b, alpha);
+    }
+
+    private static void coloredVertex(VertexConsumer vc, Matrix4f mat, Vec3 p,
+                                      int r, int g, int b, int alpha) {
+        vc.addVertex(mat, (float) p.x / 16.0F, (float) p.y / 16.0F, (float) p.z / 16.0F)
+                .setColor(r, g, b, alpha)
+                .setUv(0.5F, 0.5F)
+                .setOverlay(0)
+                .setLight(LIGHT_FULL)
+                .setNormal(0.0F, 1.0F, 0.0F);
     }
 
     private static Vector3f axisVector(String axis) {
