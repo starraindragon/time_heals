@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "all": "time_heals:block/verdict_device/down01"
+    "layer0": "time_heals:item/verdict_device"
   }
 }

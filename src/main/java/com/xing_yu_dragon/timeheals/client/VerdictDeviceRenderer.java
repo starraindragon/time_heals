@@ -132,8 +132,9 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
                                  int light, int overlay) {
         float x0 = (float) p.from.x, y0 = (float) p.from.y, z0 = (float) p.from.z;
         float x1 = (float) p.to.x, y1 = (float) p.to.y, z1 = (float) p.to.z;
-        float u1 = f.u1 / 32.0F, v1 = f.v1 / 32.0F;
-        float u2 = f.u2 / 32.0F, v2 = f.v2 / 32.0F;
+        // 模型 UV 以 16 为基准（Blockbench 项目贴图 16px，导出 JSON 的 texture_size 却写成 32）
+        float u1 = f.u1 / 16.0F, v1 = f.v1 / 16.0F;
+        float u2 = f.u2 / 16.0F, v2 = f.v2 / 16.0F;
         float nx = 0.0F, ny = 0.0F, nz = 0.0F;
 
         switch (f.dir) {
