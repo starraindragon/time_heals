@@ -9,5 +9,6 @@
   "message.time_heals.accelerate": "时间加速：×%s（剩余 %s 秒）",
   "message.time_heals.need_crystal": "缺少时间水晶",
   "key.time_heals.category": "Time Heals",
-  "key.time_heals.accelerate": "时间加速（对准机器按下）"
+  "key.time_heals.accelerate": "时间加速（对准机器按下）",
+  "block.time_heals.verdict_device": "时序裁决器"
 }

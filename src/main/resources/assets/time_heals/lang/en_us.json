@@ -8,5 +8,6 @@
   "message.time_heals.accelerate": "Time acceleration: x%s (%s s remaining)",
   "message.time_heals.need_crystal": "Missing time crystal",
   "key.time_heals.category": "Time Heals",
-  "key.time_heals.accelerate": "Time Acceleration"
+  "key.time_heals.accelerate": "Time Acceleration",
+  "block.time_heals.verdict_device": "Temporal Verdict Device"
 }
