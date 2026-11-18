@@ -6,7 +6,8 @@
 - **混沌级伤害判定** —— 主手持有时间系列武器时，龙之进化（Draconic Evolution）将其攻击判定为混沌级；
 - **时间混乱** —— 三层递进效果，第 III 层每秒造成真实伤害；
 - **时间加速** —— 对准机器按快捷键，消耗时间水晶让方块实体加速运转；
-- **内置指南** —— 基于 GuideME，悬停物品长按 G 直接跳转对应页面。
+- **内置指南** —— 基于 GuideME，悬停物品长按 G 直接跳转对应页面；
+- **时序裁决器** —— 3×3 的一次性仪式装置，破晶、蓄能、锁定并裁决混沌守卫。
 
 **English**: A NeoForge addon for the *time-series equipment* of the EazyTAC modpack.
 Items are registered by the pack's KubeJS scripts; this mod only supplies what KubeJS cannot:
@@ -21,7 +22,7 @@ and an in-game GuideME guide.
 
 | 依赖 | 类型 | 用途 |
 | --- | --- | --- |
-| `draconicevolution` | 可选 | 混沌级伤害判定（Mixin 到 `DEDamage#getDamageLevel`） |
+| `draconicevolution` | 可选 | 混沌级伤害判定（Mixin 到 `DEDamage#getDamageLevel`）；时序裁决器的目标与伤害类型 |
 | `guideme` | 可选 | 内置说明文档 |
 | `kubejs` | 不在编译期依赖 | 提供被强化的时间系列物品 |
 
@@ -81,7 +82,37 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
 客户端只在按键命中时向服务端发送 `time_heals:accelerate` 数据包，
 服务端会校验距离（≤8 格）与主手物品。
 
-### 5. 内置指南
+### 5. 时序裁决器（1.2.0）
+
+`time_heals:verdict_device`：3×3 底面、约 2 格高的一次性仪式装置，用来处理龙之进化的**混沌守卫**。
+
+**结构**：中心 1 格是控制器，周围 8 格在放置时自动生成**不可见结构块**补齐底座碰撞；
+破坏控制器时一并回收，玩家拆不掉结构块。
+
+**启动**：主手持有**一整组（64 个）时间水晶**，右键机器任意部位。
+创造模式不消耗；生存模式扣 64 个。
+
+**流程**（约 47 秒）：
+
+| 阶段 | 时长 | 表现 |
+| --- | --- | --- |
+| 破晶 | 35 秒 | 四柱用光点串连接混沌水晶，连 2 秒后爆炸并摧毁水晶；每破一颗亮一层环，共 14 层 |
+| 蓄能 | 5 秒 | 四柱顶端向中央水晶汇聚能量束 |
+| 锁定 | 5 秒 | 中央水晶向守卫发射追踪光束（岛上 256 格内可锁定） |
+| 攻击 | 5 tick | 尖啸音波命中，造成 50000 混沌级伤害（连 16000 护盾 + 1000 本体一起打掉） |
+| 收尾 | 2 秒 | 进度满格后自毁为**哭泣的黑曜石** |
+
+**表现细节**：
+- 底盘进度槽按阶段推进，颜色由绿渐变到红；
+- 柱子上的 14 层环会一直保留到仪式结束；
+- 伤害类型使用 `draconicevolution:chaos_implosion`（DE 的 chaotic 标签），忽略护盾；
+- 附近仍有存活水晶时不强行处决，只造成伤害。
+
+**模型**：读取 `assets/time_heals/models/block/verdict_device_parts.json`
+（Blockbench 导出的 Java 方块模型格式），替换该 JSON 与贴图即可换模型，无需改 Java。
+中央水晶按 15°/秒自旋、上下浮动总行程 1 格。
+
+### 6. 内置指南
 
 基于 GuideME，内容位于 `assets/time_heals/time_heals_guide/`：
 
@@ -97,6 +128,7 @@ items/time-crystal.md       时间水晶
 items/time-upgrade-template.md  时间锻造模板
 blocks/time-crystal-block.md    时间水晶块
 blocks/2x-time-crystal-block.md 2 重压缩时间水晶块
+blocks/verdict-device.md    时序裁决器
 effects/time-confusion.md   时间混乱
 mechanics/chaos-damage.md   混沌级伤害
 mechanics/time-acceleration.md  时间加速
@@ -157,16 +189,26 @@ runtimeOnly fileTree('devmods') { include '*.jar' }
 - 不注册任何物品，所有时间系物品来自 KubeJS；
 - 时间加速只对「注册了 `BlockEntityTicker` 的方块实体」或「会随机刻的方块」生效；
 - 加速状态仅存在于内存，服务器重启后失效，需要重新施加；
-- 混沌守卫的晶体/守卫本身属于多部位实体，本模组不为其做特殊处理。
+- 时序裁决器是一次性的，仪式结束即变为哭泣的黑曜石；
+- 附近没有混沌守卫时，裁决器的锁定/攻击阶段会空转，但机器照样消耗；
+- 裁决器的伤害写入为 50000；若你改过 DE 的 `guardianShield` / `guardianHealth` 配置，需要同步调整。
 
 ## 变更记录
 
 ### 1.2.0
 
 - 新增：**时序裁决器**方块（`time_heals:verdict_device`），3×3 视觉、逻辑占 1 格；
+- 新增：8 个不可见结构块，补齐 3×3 底座碰撞，随控制器自动放置/回收；
+- 新增：完整仪式流程（破晶 → 蓄能 → 锁定 → 攻击 → 自毁），约 47 秒；
+- 新增：破晶阶段四柱连接并摧毁混沌守卫的水晶；
+- 新增：蓄能阶段四柱向核心汇聚能量束；
+- 新增：锁定阶段追踪混沌守卫（岛上 256 格），攻击阶段造成混沌级伤害并可能处决；
+- 新增：底盘进度槽（绿→红）与柱子 14 层常驻圆环（客户端绘制）；
+- 新增：仪式音效与自定义字幕（时序裁决器：破晶/蓄能/锁定/攻击/裁决、混沌水晶：爆炸）；
+- 新增：一次性消耗——手持 64 个时间水晶启动，结束后自毁为哭泣的黑曜石；
+- 新增：指南「时序裁决器」页面；
 - 模型读取 `assets/time_heals/models/block/verdict_device_parts.json`，替换该 JSON 与贴图即可换模型；
-- 中央水晶：自旋 15°/秒、上下浮动总行程 1 格（周期 2 秒）；
-- 碰撞箱只覆盖底座，避免遮挡走位。
+- 中央水晶：自旋 15°/秒、上下浮动总行程 1 格（周期 2 秒）。
 
 ### 1.1.0
 
