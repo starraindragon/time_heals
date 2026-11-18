@@ -108,6 +108,15 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
 - 伤害类型使用 `draconicevolution:chaos_implosion`（DE 的 chaotic 标签），忽略护盾；
 - 附近仍有存活水晶时不强行处决，只造成伤害。
 
+**配方**（模组自带，随模组安装自动生效）：
+
+- 类型：龙之进化 **融合合成**（`draconicevolution:fusion_crafting`，`techLevel: draconic`）；
+- 催化剂：神龙之力权杖 `draconicevolution:draconic_staff`；
+- 基础材料：时间核心 ×4、时间水晶块 ×4、神龙电容 ×2、神龙弓 ×2；
+- 能量：256,000,000；
+- **按模组附加**：装了数据能源学追加「极限承载接口 ×2」，装了 Powah 追加「下界电容 ×2」；
+- 四套组合配方互斥（`mod_loaded` / `not(mod_loaded)` / `item_exists` 条件），任意环境只有一套生效。
+
 **模型**：读取 `assets/time_heals/models/block/verdict_device_parts.json`
 （Blockbench 导出的 Java 方块模型格式），替换该 JSON 与贴图即可换模型，无需改 Java。
 中央水晶按 15°/秒自旋、上下浮动总行程 1 格。
@@ -207,6 +216,7 @@ runtimeOnly fileTree('devmods') { include '*.jar' }
 - 新增：仪式音效与自定义字幕（时序裁决器：破晶/蓄能/锁定/攻击/裁决、混沌水晶：爆炸）；
 - 新增：一次性消耗——手持 64 个时间水晶启动，结束后自毁为哭泣的黑曜石；
 - 新增：指南「时序裁决器」页面；
+- 新增：神龙级融合合成配方，按数据能源学 / Powah 的加载情况自动附加材料（四套互斥配方）；
 - 模型读取 `assets/time_heals/models/block/verdict_device_parts.json`，替换该 JSON 与贴图即可换模型；
 - 中央水晶：自旋 15°/秒、上下浮动总行程 1 格（周期 2 秒）。
 
