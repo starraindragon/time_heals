@@ -36,17 +36,21 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final double LOCK_RADIUS = 256.0D;
     /** 蓄能期时长（tick）：5 秒，柱子向核心发射粒子束。 */
     public static final int CHARGE_TICKS = 100;
+    /** 攻击阶段时长（tick）：5 tick，尖啸音波从水晶飞到目标。 */
+    public static final int ATTACK_TICKS = 5;
     /** 蓄能结束后的收尾时间（tick）。 */
     public static final int DEMO_TAIL = 40;
     /** 演示总时长 = 破晶阶段 + 蓄能 + 收尾，全部由各阶段时长推导。 */
     public static final int DEMO_TICKS =
-            CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + LOCK_TICKS + DEMO_TAIL;
+            CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + LOCK_TICKS
+                    + ATTACK_TICKS + DEMO_TAIL;
     /** 阶段常量。 */
     public static final int PHASE_IDLE = 0;
     public static final int PHASE_LOCK = 1;
     public static final int PHASE_BREAK = 2;
     public static final int PHASE_CHARGE = 3;
-    public static final int PHASE_DONE = 4;
+    public static final int PHASE_ATTACK = 4;
+    public static final int PHASE_DONE = 5;
 
     /** 0 = 待机，后续接入锁定/破晶/蓄能/裁决/收尾。 */
     private int phase = 0;
@@ -201,6 +205,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             int breakEnd = CRYSTAL_INTERVAL * RING_LAYERS;
             int chargeEnd = breakEnd + CHARGE_TICKS;
             int lockEnd = chargeEnd + LOCK_TICKS;
+            int attackEnd = lockEnd + ATTACK_TICKS;
             int newPhase;
             if (elapsedTicks <= breakEnd) {
                 newPhase = PHASE_BREAK;
@@ -212,6 +217,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 newPhase = PHASE_LOCK;
                 progress = 1.0F;
                 updateAim();
+            } else if (elapsedTicks <= attackEnd) {
+                newPhase = PHASE_ATTACK;
+                progress = 1.0F;
+                updateAim();
+                fireSonicAttack(elapsedTicks - lockEnd);
             } else {
                 newPhase = PHASE_DONE;
                 progress = 1.0F;
@@ -262,6 +272,39 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         spawnPillarRings(layer);
         setChanged();
         sync();
+    }
+
+    /** 攻击阶段：沿水晶→守卫的路径生成尖啸音波粒子（5 tick 内飞到）。 */
+    private void fireSonicAttack(int step) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server) || !hasAim) {
+            return;
+        }
+        double sx = worldPosition.getX() + 0.5D;
+        double sy = worldPosition.getY() + 1.25D;
+        double sz = worldPosition.getZ() + 0.5D;
+        double ex = worldPosition.getX() + 0.5D + aimX;
+        double ey = worldPosition.getY() + aimY;
+        double ez = worldPosition.getZ() + 0.5D + aimZ;
+
+        float t = Math.min(1.0F, step / (float) ATTACK_TICKS);
+        // 每个 tick 在当前位置生成一组音波粒子，形成一串冲击
+        for (int i = 0; i < 3; i++) {
+            double tt = Math.max(0.0D, t - i * 0.08D);
+            double px = Mth.lerp(tt, sx, ex);
+            double py = Mth.lerp(tt, sy, ey);
+            double pz = Mth.lerp(tt, sz, ez);
+            server.sendParticles(ParticleTypes.SONIC_BOOM, px, py, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        // 最后一步在目标处炸开
+        if (step >= ATTACK_TICKS) {
+            for (int i = 0; i < 4; i++) {
+                server.sendParticles(ParticleTypes.SONIC_BOOM,
+                        ex + (server.random.nextDouble() - 0.5D) * 2.0D,
+                        ey + (server.random.nextDouble() - 0.5D) * 2.0D,
+                        ez + (server.random.nextDouble() - 0.5D) * 2.0D,
+                        1, 0.0D, 0.0D, 0.0D, 0.0D);
+            }
+        }
     }
 
     /** 四根柱子：模型坐标 (-7.5,-7.5)、(23.5,-7.5)、(-7.5,23.5)、(23.5,23.5)（单位 1/16 格）。 */
