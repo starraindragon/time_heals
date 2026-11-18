@@ -38,7 +38,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final int DEMO_TAIL = 40;
     /** 演示总时长 = 破晶阶段 + 蓄能 + 收尾，全部由各阶段时长推导。 */
     public static final int DEMO_TICKS =
-            LOCK_TICKS + CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + DEMO_TAIL;
+            CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + LOCK_TICKS + DEMO_TAIL;
     /** 阶段常量。 */
     public static final int PHASE_IDLE = 0;
     public static final int PHASE_LOCK = 1;
@@ -180,21 +180,21 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 onCrystalBroken();
             }
 
-            // 阶段推进：锁定 5 秒 → 破晶 14 层 → 蓄能 5 秒 → 收尾
-            int lockEnd = LOCK_TICKS;
-            int breakEnd = lockEnd + CRYSTAL_INTERVAL * RING_LAYERS;
+            // 阶段推进：破晶 14 层 → 蓄能 5 秒 → 锁定 5 秒 → 收尾
+            int breakEnd = CRYSTAL_INTERVAL * RING_LAYERS;
             int chargeEnd = breakEnd + CHARGE_TICKS;
+            int lockEnd = chargeEnd + LOCK_TICKS;
             int newPhase;
-            if (elapsedTicks <= lockEnd) {
-                newPhase = PHASE_LOCK;
-                progress = 0.0F;
-                updateAim();
-            } else if (elapsedTicks <= breakEnd) {
+            if (elapsedTicks <= breakEnd) {
                 newPhase = PHASE_BREAK;
-                progress = (elapsedTicks - lockEnd) / (float) (breakEnd - lockEnd);
+                progress = Math.min(1.0F, elapsedTicks / (float) breakEnd);
             } else if (elapsedTicks <= chargeEnd) {
                 newPhase = PHASE_CHARGE;
                 progress = 1.0F;
+            } else if (elapsedTicks <= lockEnd) {
+                newPhase = PHASE_LOCK;
+                progress = 1.0F;
+                updateAim();
             } else {
                 newPhase = PHASE_DONE;
                 progress = 1.0F;
