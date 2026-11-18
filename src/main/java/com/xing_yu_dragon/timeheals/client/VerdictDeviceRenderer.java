@@ -61,6 +61,8 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
 
     private static List<Part> parts;
     private static final Map<String, RenderType> RENDER_TYPES = new ConcurrentHashMap<>();
+    /** 全亮光照（0xF000F0）。 */
+    private static final int LIGHT_FULL = 0xF000F0;
 
     public VerdictDeviceRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -184,11 +186,12 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
     private static void vertex(VertexConsumer vc, Matrix4f mat,
                                float x, float y, float z, float u, float v,
                                float nx, float ny, float nz, int light, int overlay) {
+        // 先用全亮光照，排除「光照贴图为 0 导致整块发黑」这一可能
         vc.addVertex(mat, x / 16.0F, y / 16.0F, z / 16.0F)
                 .setColor(255, 255, 255, 255)
                 .setUv(u, v)
                 .setOverlay(overlay)
-                .setLight(light)
+                .setLight(LIGHT_FULL)
                 .setNormal(nx, ny, nz);
     }
 
@@ -239,6 +242,10 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
         } catch (Exception ex) {
             TimeHeals.LOGGER.error("[time_heals] 时序裁决器模型加载失败: {}", ex.toString());
             return List.of();
+        }
+        if (!out.isEmpty()) {
+            TimeHeals.LOGGER.info("[time_heals] 时序裁决器模型已加载: {} 个部件，首个贴图={}",
+                    out.size(), out.get(0).faces.get(0).texture);
         }
         return out;
     }
