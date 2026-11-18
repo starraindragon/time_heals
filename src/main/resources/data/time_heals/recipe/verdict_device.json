@@ -7,30 +7,6 @@
     {
       "consume": true,
       "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
         "item": "kubejs:time_crystal_block"
       }
     },
@@ -99,10 +75,6 @@
     {
       "type": "neoforge:item_exists",
       "item": "kubejs:time_crystal_block"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "data_energistics:time_core"
     },
     {
       "type": "neoforge:not",

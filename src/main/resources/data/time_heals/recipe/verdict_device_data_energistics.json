@@ -7,30 +7,6 @@
     {
       "consume": true,
       "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
-        "item": "data_energistics:time_core"
-      }
-    },
-    {
-      "consume": true,
-      "ingredient": {
         "item": "kubejs:time_crystal_block"
       }
     },
@@ -74,6 +50,30 @@
       "consume": true,
       "ingredient": {
         "item": "draconicevolution:draconic_bow"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
       }
     },
     {
@@ -113,12 +113,12 @@
       "item": "kubejs:time_crystal_block"
     },
     {
-      "type": "neoforge:item_exists",
-      "item": "data_energistics:time_core"
-    },
-    {
       "type": "neoforge:mod_loaded",
       "modid": "data_energistics"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "data_energistics:time_core"
     },
     {
       "type": "neoforge:item_exists",
