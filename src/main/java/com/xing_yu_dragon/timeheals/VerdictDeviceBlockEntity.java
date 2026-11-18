@@ -132,13 +132,16 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             target = server.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
                             new net.minecraft.world.phys.AABB(worldPosition).inflate(64.0D),
                             e -> e.getType().builtInRegistryHolder().key().location().toString()
-                                    .equals("draconicevolution:chaos_guardian"))
+                                    .equals("draconicevolution:draconic_guardian"))
                     .stream().findFirst().orElse(null);
             targetUuid = target == null ? null : target.getUUID();
         }
         if (target == null) {
             hasAim = false;
             return;
+        }
+        if (!hasAim) {
+            TimeHeals.LOGGER.info("[时间混乱] 时序裁决器锁定目标: {}", target.getName().getString());
         }
         aimX = (float) (target.getX() - (worldPosition.getX() + 0.5D));
         aimY = (float) (target.getY() + target.getBbHeight() * 0.5D - worldPosition.getY());
