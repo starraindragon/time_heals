@@ -36,6 +36,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final double LOCK_RADIUS = 256.0D;
     /** 蓄能期时长（tick）：5 秒，柱子向核心发射粒子束。 */
     public static final int CHARGE_TICKS = 100;
+    /** 每轮破晶内，先连接多久（tick）再爆；剩下的时间留给爆炸与下一次连接。 */
+    public static final int LINK_TICKS = 40;
     /** 攻击阶段时长（tick）：5 tick，尖啸音波从水晶飞到目标。 */
     public static final int ATTACK_TICKS = 5;
     /** 蓄能结束后的收尾时间（tick）。 */
