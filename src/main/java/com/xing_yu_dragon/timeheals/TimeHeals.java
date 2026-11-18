@@ -8,10 +8,13 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -75,5 +78,19 @@ public class TimeHeals {
         }
         container.registerConfig(ModConfig.Type.COMMON, TimeHealsConfig.SPEC);
         LOGGER.info("[time_heals] 前置已加载：时间系列武器白名单 + 时间混乱效果 + 时序裁决器");
+    }
+
+    /** 把机器放进创造模式「功能方块」页，方便搜索与取用。 */
+    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+    public static final class CreativeTabHandler {
+        private CreativeTabHandler() {
+        }
+
+        @net.neoforged.bus.api.SubscribeEvent
+        public static void onBuildTab(BuildCreativeModeTabContentsEvent event) {
+            if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+                event.accept(VERDICT_DEVICE_ITEM);
+            }
+        }
     }
 }
