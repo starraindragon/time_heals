@@ -126,6 +126,75 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
 
         drawProgressRing(pose, buffers, be.getProgress(), time);
         drawPillarRings(pose, buffers, be.getCrystalRings(), time);
+        if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_CHARGE) {
+            drawChargeBeams(pose, buffers, time);
+        }
+    }
+
+    /** 蓄能期：从四根柱子顶端向中央水晶发射粒子流，密到几乎连成线。 */
+    private static void drawChargeBeams(PoseStack pose, MultiBufferSource buffers, float time) {
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityTranslucent(GLOW));
+        Matrix4f mat = pose.last().pose();
+
+        float[] px = {-7.5F, 23.5F, -7.5F, 23.5F};
+        float[] pz = {-7.5F, -7.5F, 23.5F, 23.5F};
+        float startY = 32.0F;      // 柱顶（模型单位）
+        // 终点 = 网格坐标 (47, 49, 47) 换算到模型单位：grid × 0.5 − 16
+        float endX = 7.5F;
+        float endY = 24.5F;
+        float endZ = 7.5F;
+        int points = 30;           // 每条束上的粒子数，密到连成线
+        float size = 0.05F * 16.0F;
+
+        // 颜色随时间在青白之间脉动
+        float pulse = 0.65F + 0.35F * Mth.sin(time * 0.35F);
+        int r = (int) (170 * pulse + 60);
+        int g = (int) (245 * pulse + 10);
+        int b = (int) (230 * pulse + 25);
+        int alpha = 235;
+
+        for (int p = 0; p < 4; p++) {
+            // 先铺一条很细的亮线，保证远看也是连成一条
+            int lineSeg = 32;
+            for (int i = 0; i < lineSeg; i++) {
+                float t0 = i / (float) lineSeg;
+                float t1 = (i + 1) / (float) lineSeg;
+                float x0 = Mth.lerp(t0, px[p], endX);
+                float y0 = Mth.lerp(t0, startY, endY);
+                float z0 = Mth.lerp(t0, pz[p], endZ);
+                float x1 = Mth.lerp(t1, px[p], endX);
+                float y1 = Mth.lerp(t1, startY, endY);
+                float z1 = Mth.lerp(t1, pz[p], endZ);
+                float w = 0.02F * 16.0F;
+                coloredQuad(vc, mat, x0, y0 + w, z0, x1, y1 + w, z1, x1, y1 - w, z1, x0, y0 - w, z0,
+                        120, 240, 230, 120, 0.0F, 1.0F, 0.0F);
+            }
+            for (int i = 0; i < points; i++) {
+                // 粒子沿路径流动，整体看起来像连续光束
+                float t = (i / (float) points + time * 0.09F) % 1.0F;
+                float x = Mth.lerp(t, px[p], endX);
+                float y = Mth.lerp(t, startY, endY) + Mth.sin(time * 0.2F + i) * 0.4F;
+                float z = Mth.lerp(t, pz[p], endZ);
+                glowCross(vc, mat, x, y, z, size, r, g, b, alpha);
+            }
+        }
+        // 核心处汇聚的亮点
+        for (int i = 0; i < 8; i++) {
+            double a = time * 0.15F + i * (Math.PI * 2 / 8);
+            float x = endX + (float) (Math.cos(a) * 1.6F);
+            float z = endZ + (float) (Math.sin(a) * 1.6F);
+            float y = endY + Mth.sin(time * 0.4F + i) * 1.2F;
+            glowCross(vc, mat, x, y, z, size * 1.4F, 255, 255, 255, 240);
+        }
+    }
+
+    /** 两个互相垂直的竖面片，从任意角度看都能看到一点“粒子”。 */
+    private static void glowCross(VertexConsumer vc, Matrix4f mat, float x, float y, float z,
+                                  float half, int r, int g, int b, int alpha) {
+        coloredQuad(vc, mat, x - half, y + half, z, x + half, y + half, z,
+                x + half, y - half, z, x - half, y - half, z, r, g, b, alpha, 0, 0, 1);
+        coloredQuad(vc, mat, x, y + half, z - half, x, y + half, z + half,
+                x, y - half, z + half, x, y - half, z - half, r, g, b, alpha, 1, 0, 0);
     }
 
     /** 每根柱子上已点亮层数的常驻圆环：细环带，客户端每帧绘制。 */

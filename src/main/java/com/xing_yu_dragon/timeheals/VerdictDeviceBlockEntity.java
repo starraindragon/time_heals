@@ -30,10 +30,18 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final int RING_LAYERS = 14;
     /** 两次破晶之间的间隔（tick）：2.5 秒，保证单个特效能完整演完。 */
     public static final int CRYSTAL_INTERVAL = 50;
-    /** 最后一次破晶之后留的收尾时间（tick）。 */
+    /** 蓄能期时长（tick）：5 秒，柱子向核心发射粒子束。 */
+    public static final int CHARGE_TICKS = 100;
+    /** 蓄能结束后的收尾时间（tick）。 */
     public static final int DEMO_TAIL = 40;
-    /** 演示总时长 = 间隔 × 层数 + 收尾，不写死。 */
-    public static final int DEMO_TICKS = CRYSTAL_INTERVAL * RING_LAYERS + DEMO_TAIL;
+    /** 演示总时长 = 破晶阶段 + 蓄能 + 收尾，全部由各阶段时长推导。 */
+    public static final int DEMO_TICKS =
+            CRYSTAL_INTERVAL * RING_LAYERS + CHARGE_TICKS + DEMO_TAIL;
+    /** 阶段常量。 */
+    public static final int PHASE_IDLE = 0;
+    public static final int PHASE_BREAK = 1;
+    public static final int PHASE_CHARGE = 2;
+    public static final int PHASE_DONE = 3;
 
     /** 0 = 待机，后续接入锁定/破晶/蓄能/裁决/收尾。 */
     private int phase = 0;
@@ -99,6 +107,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         this.crystalRings = 0;
         this.crystalsBroken = 0;
         this.ritualTime = 0;
+        this.elapsedTicks = 0;
         this.phase = 1;
         setChanged();
         sync();
@@ -119,9 +128,25 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 onCrystalBroken();
             }
 
-            // 进度：破晶阶段走 0→1，收尾阶段保持 1
-            float breakSpan = (float) (CRYSTAL_INTERVAL * RING_LAYERS);
-            progress = Math.min(1.0F, elapsedTicks / breakSpan);
+            // 阶段推进：破晶 14 层 → 蓄能 5 秒 → 收尾
+            int breakSpan = CRYSTAL_INTERVAL * RING_LAYERS;
+            int chargeEnd = breakSpan + CHARGE_TICKS;
+            int newPhase;
+            if (elapsedTicks <= breakSpan) {
+                newPhase = PHASE_BREAK;
+                progress = Math.min(1.0F, elapsedTicks / (float) breakSpan);
+            } else if (elapsedTicks <= chargeEnd) {
+                newPhase = PHASE_CHARGE;
+                progress = 1.0F;
+            } else {
+                newPhase = PHASE_DONE;
+                progress = 1.0F;
+            }
+            if (newPhase != phase) {
+                phase = newPhase;
+                setChanged();
+                sync();
+            }
 
             if (remainingTicks % 2 == 0 || remainingTicks == 0) {
                 sync();
