@@ -13,7 +13,7 @@ Items are registered by the pack's KubeJS scripts; this mod only supplies what K
 chaotic damage detection, the Time Confusion effect, block-entity time acceleration,
 and an in-game GuideME guide.
 
-- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.1.0`
+- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.2.0`
 
 ---
 
@@ -131,7 +131,7 @@ accelerationDisplayRange = 5.0
 ./gradlew build
 ```
 
-产物：`build/libs/time_heals-1.1.0.jar`
+产物：`build/libs/time_heals-1.2.0.jar`
 
 ### dev 运行约定
 
@@ -160,6 +160,13 @@ runtimeOnly fileTree('devmods') { include '*.jar' }
 - 混沌守卫的晶体/守卫本身属于多部位实体，本模组不为其做特殊处理。
 
 ## 变更记录
+
+### 1.2.0
+
+- 新增：**时序裁决器**方块（`time_heals:verdict_device`），3×3 视觉、逻辑占 1 格；
+- 模型读取 `assets/time_heals/models/block/verdict_device_parts.json`，替换该 JSON 与贴图即可换模型；
+- 中央水晶：自旋 15°/秒、上下浮动总行程 1 格（周期 2 秒）；
+- 碰撞箱只覆盖底座，避免遮挡走位。
 
 ### 1.1.0
 
