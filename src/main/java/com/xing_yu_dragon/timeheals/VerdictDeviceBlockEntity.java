@@ -115,10 +115,6 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             if (remainingTicks % DEMO_CRYSTAL_INTERVAL == 0) {
                 onCrystalBroken();
             }
-            // 仪式期间让已生成的圆环持续存在（每 6 tick 刷新一次，缓慢旋转）
-            if (crystalRings > 0 && ritualTime % 6 == 0) {
-                tickPillarRings();
-            }
             if (remainingTicks == 0) {
                 progress = 1.0F;
                 resetTicks = 40;
@@ -156,17 +152,6 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         spawnPillarRings(layer);
         setChanged();
         sync();
-    }
-
-    /** 仪式期间持续点亮所有已生成的圆环层。 */
-    private void tickPillarRings() {
-        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
-            return;
-        }
-        float phase = ritualTime * 0.03F;
-        for (int layer = 0; layer < crystalRings; layer++) {
-            spawnRingLayer(server, layer, 8, phase, false);
-        }
     }
 
     /** 四根柱子：模型坐标 (-7.5,-7.5)、(23.5,-7.5)、(-7.5,23.5)、(23.5,23.5)（单位 1/16 格）。 */

@@ -125,6 +125,68 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
         }
 
         drawProgressRing(pose, buffers, be.getProgress(), time);
+        drawPillarRings(pose, buffers, be.getCrystalRings(), time);
+    }
+
+    /** 每根柱子上已点亮层数的常驻圆环：细环带，客户端每帧绘制。 */
+    private static void drawPillarRings(PoseStack pose, MultiBufferSource buffers, int rings, float time) {
+        if (rings <= 0) {
+            return;
+        }
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityTranslucent(GLOW));
+        Matrix4f mat = pose.last().pose();
+
+        float[] cx = {-7.5F, 23.5F, -7.5F, 23.5F};
+        float[] cz = {-7.5F, -7.5F, 23.5F, 23.5F};
+        int segments = 24;
+        float rInner = 0.30F * 16.0F;
+        float rOuter = 0.38F * 16.0F;
+
+        for (int layer = 0; layer < Math.min(rings, 14); layer++) {
+            float t = (layer + 1) / 14.0F;
+            float[] c = lerpColor(0.0F, 1.0F, t);
+            float pulse = 0.70F + 0.30F * Mth.sin(time * 0.12F + layer * 0.85F);
+            int r = (int) (c[0] * 255 * pulse);
+            int g = (int) (c[1] * 255 * pulse);
+            int b = (int) (c[2] * 255 * pulse);
+            int alpha = 225;
+            float y = (0.30F + (1.62F * layer) / 13.0F) * 16.0F;
+            float phase = time * 0.02F + layer * 0.35F;
+
+            for (int p = 0; p < 4; p++) {
+                for (int i = 0; i < segments; i++) {
+                    double a0 = (Math.PI * 2.0D) * i / segments + phase;
+                    double a1 = (Math.PI * 2.0D) * (i + 1) / segments + phase;
+                    float x0 = cx[p] + (float) (Math.cos(a0) * rInner);
+                    float z0 = cz[p] + (float) (Math.sin(a0) * rInner);
+                    float x1 = cx[p] + (float) (Math.cos(a0) * rOuter);
+                    float z1 = cz[p] + (float) (Math.sin(a0) * rOuter);
+                    float x2 = cx[p] + (float) (Math.cos(a1) * rOuter);
+                    float z2 = cz[p] + (float) (Math.sin(a1) * rOuter);
+                    float x3 = cx[p] + (float) (Math.cos(a1) * rInner);
+                    float z3 = cz[p] + (float) (Math.sin(a1) * rInner);
+                    coloredQuad(vc, mat, x0, y, z0, x1, y, z1, x2, y, z2, x3, y, z3,
+                            r, g, b, alpha, 0.0F, 1.0F, 0.0F);
+                }
+            }
+        }
+    }
+
+    private static void coloredQuad(VertexConsumer vc, Matrix4f mat,
+                                    float ax, float ay, float az,
+                                    float bx, float by, float bz,
+                                    float cx2, float cy, float cz2,
+                                    float dx, float dy, float dz,
+                                    int r, int g, int b, int alpha,
+                                    float nx, float ny, float nz) {
+        vc.addVertex(mat, ax / 16.0F, ay / 16.0F, az / 16.0F).setColor(r, g, b, alpha)
+                .setUv(0.5F, 0.5F).setOverlay(0).setLight(LIGHT_FULL).setNormal(nx, ny, nz);
+        vc.addVertex(mat, bx / 16.0F, by / 16.0F, bz / 16.0F).setColor(r, g, b, alpha)
+                .setUv(0.5F, 0.5F).setOverlay(0).setLight(LIGHT_FULL).setNormal(nx, ny, nz);
+        vc.addVertex(mat, cx2 / 16.0F, cy / 16.0F, cz2 / 16.0F).setColor(r, g, b, alpha)
+                .setUv(0.5F, 0.5F).setOverlay(0).setLight(LIGHT_FULL).setNormal(nx, ny, nz);
+        vc.addVertex(mat, dx / 16.0F, dy / 16.0F, dz / 16.0F).setColor(r, g, b, alpha)
+                .setUv(0.5F, 0.5F).setOverlay(0).setLight(LIGHT_FULL).setNormal(nx, ny, nz);
     }
 
     /** 底盘的进度环：按进度逐段点亮，颜色由绿过渡到红。 */
