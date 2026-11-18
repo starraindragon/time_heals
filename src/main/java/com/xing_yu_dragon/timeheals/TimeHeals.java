@@ -51,8 +51,9 @@ public class TimeHeals {
             BLOCKS.register("verdict_device", () -> new VerdictDeviceBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(6.0F, 1200.0F)
-                            .sound(SoundType.METAL)
+                            .strength(5.0F, 6.0F)
+                            .sound(SoundType.AMETHYST)
+                            .requiresCorrectToolForDrops()
                             .noOcclusion()));
 
     /** 不可见的结构块，仅用于给 3×3 底座补碰撞。 */
