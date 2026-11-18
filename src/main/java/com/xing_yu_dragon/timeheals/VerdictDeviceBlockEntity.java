@@ -64,6 +64,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     private int ritualTime = 0;
     /** 锁定的混沌守卫（UUID）；没有目标时为空。 */
     private java.util.UUID targetUuid = null;
+    /** 当前正在连接的混沌水晶（UUID）。 */
+    private java.util.UUID crystalUuid = null;
     /** 瞄准点（相对方块坐标，客户端渲染用）。 */
     private float aimX, aimY, aimZ;
     private boolean hasAim = false;
@@ -274,14 +276,18 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         sync();
     }
 
-    /** 破晶阶段：四根柱子顶端用 END_ROD 连到中央水晶（末影龙治疗水晶同款粒子）。 */
+    /** 破晶阶段：四根柱子顶端用 END_ROD 连到混沌守卫的水晶（末影龙连接水晶同款粒子）。 */
     private void spawnDragonLinks() {
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
             return;
         }
-        double cx = worldPosition.getX() + 0.5D;
-        double cy = worldPosition.getY() + 1.25D;
-        double cz = worldPosition.getZ() + 0.5D;
+        net.minecraft.world.entity.Entity crystal = currentCrystal(server);
+        if (crystal == null) {
+            return;
+        }
+        double cx = crystal.getX();
+        double cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
+        double cz = crystal.getZ();
         float[] px = {-7.5F / 16.0F, 23.5F / 16.0F, -7.5F / 16.0F, 23.5F / 16.0F};
         float[] pz = {-7.5F / 16.0F, -7.5F / 16.0F, 23.5F / 16.0F, 23.5F / 16.0F};
         int points = 12;
@@ -298,17 +304,60 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         }
     }
 
+    /** 找到（或刷新）当前要连接的混沌水晶。 */
+    private net.minecraft.world.entity.Entity currentCrystal(net.minecraft.server.level.ServerLevel server) {
+        net.minecraft.world.entity.Entity crystal = null;
+        if (crystalUuid != null) {
+            crystal = server.getEntity(crystalUuid);
+        }
+        if (crystal != null && crystal.isAlive()) {
+            return crystal;
+        }
+        double maxSq = LOCK_RADIUS * LOCK_RADIUS;
+        double bestSq = Double.MAX_VALUE;
+        for (net.minecraft.world.entity.Entity candidate : server.getAllEntities()) {
+            if (!candidate.isAlive()
+                    || !candidate.getType().builtInRegistryHolder().key().location().toString()
+                            .equals("draconicevolution:guardian_crystal")) {
+                continue;
+            }
+            double d = candidate.distanceToSqr(worldPosition.getX() + 0.5D,
+                    worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D);
+            if (d <= maxSq && d < bestSq) {
+                bestSq = d;
+                crystal = candidate;
+            }
+        }
+        crystalUuid = crystal == null ? null : crystal.getUUID();
+        return crystal;
+    }
+
     /** 破晶瞬间：核心处爆炸粒子。 */
     private void spawnCrystalExplosion() {
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
             return;
         }
-        double cx = worldPosition.getX() + 0.5D;
-        double cy = worldPosition.getY() + 1.25D;
-        double cz = worldPosition.getZ() + 0.5D;
+        net.minecraft.world.entity.Entity crystal = currentCrystal(server);
+        double cx;
+        double cy;
+        double cz;
+        if (crystal != null) {
+            cx = crystal.getX();
+            cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
+            cz = crystal.getZ();
+        } else {
+            cx = worldPosition.getX() + 0.5D;
+            cy = worldPosition.getY() + 1.25D;
+            cz = worldPosition.getZ() + 0.5D;
+        }
         server.sendParticles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
         server.sendParticles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
         server.sendParticles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
+        // 真正摧毁这颗混沌水晶
+        if (crystal != null) {
+            crystal.kill();
+            crystalUuid = null;
+        }
     }
 
     /** 攻击阶段：沿水晶→守卫的路径生成尖啸音波粒子（5 tick 内飞到）。 */
