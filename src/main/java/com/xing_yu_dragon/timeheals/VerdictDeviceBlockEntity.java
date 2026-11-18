@@ -334,22 +334,25 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         }
     }
 
-    /** 在机器位置播放音效（以机器为中心，全维度玩家可听）。 */
+    /** 在机器位置播放音效，强制发给该维度所有玩家（不受距离衰减限制）。 */
     private void playAt(net.minecraft.sounds.SoundEvent sound, float volume, float pitch) {
-        if (level == null || level.isClientSide()) {
-            return;
-        }
-        level.playSound(null, worldPosition, sound, net.minecraft.sounds.SoundSource.BLOCKS,
-                volume, pitch);
+        playAtPos(sound, worldPosition.getX() + 0.5D, worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D, volume, pitch);
     }
 
-    /** 在指定坐标播放音效。 */
+    /** 在指定坐标播放音效，强制发给该维度所有玩家。 */
     private void playAtPos(net.minecraft.sounds.SoundEvent sound,
                            double x, double y, double z, float volume, float pitch) {
-        if (level == null || level.isClientSide()) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
             return;
         }
-        level.playSound(null, x, y, z, sound, net.minecraft.sounds.SoundSource.BLOCKS, volume, pitch);
+        net.minecraft.core.Holder<net.minecraft.sounds.SoundEvent> holder =
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound);
+        for (net.minecraft.server.level.ServerPlayer player : server.getPlayers(p -> true)) {
+            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                    holder, net.minecraft.sounds.SoundSource.BLOCKS,
+                    x, y, z, volume, pitch, server.random.nextLong()));
+        }
     }
 
     /**
@@ -433,7 +436,10 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         double cx = crystal.getX();
         double cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
         double cz = crystal.getZ();
-        playAtPos(TimeSounds.CRYSTAL_EXPLODE.get(), cx, cy, cz, 2.0F, 1.0F);
+        // 爆炸：低沉 + 远处也听得到
+        playAtPos(TimeSounds.CRYSTAL_EXPLODE.get(), cx, cy, cz, 4.0F, 0.8F);
+        // 机器处再补一记低频，强化“破晶”的冲击感
+        playAt(TimeSounds.CRYSTAL_EXPLODE.get(), 2.5F, 0.6F);
         particles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
         particles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
         particles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
