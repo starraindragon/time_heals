@@ -26,12 +26,14 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class VerdictDeviceBlockEntity extends BlockEntity {
 
-    /** 演示仪式总时长（tick）。 */
-    public static final int DEMO_TICKS = 20 * 20;
     /** 每根柱子上的圆环层数。 */
     public static final int RING_LAYERS = 14;
-    /** 演示时按「层数」均分整段时长：20 秒内正好破 14 次，保证 14 层都能看到。 */
-    private static final int DEMO_CRYSTAL_INTERVAL = DEMO_TICKS / RING_LAYERS;
+    /** 两次破晶之间的间隔（tick）：2.5 秒，保证单个特效能完整演完。 */
+    public static final int CRYSTAL_INTERVAL = 50;
+    /** 最后一次破晶之后留的收尾时间（tick）。 */
+    public static final int DEMO_TAIL = 40;
+    /** 演示总时长 = 间隔 × 层数 + 收尾，不写死。 */
+    public static final int DEMO_TICKS = CRYSTAL_INTERVAL * RING_LAYERS + DEMO_TAIL;
 
     /** 0 = 待机，后续接入锁定/破晶/蓄能/裁决/收尾。 */
     private int phase = 0;
@@ -43,6 +45,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     private int crystalRings = 0;
     /** 仪式已进行的 tick，用于圆环旋转相位。 */
     private int ritualTime = 0;
+    /** 已进行 tick。 */
+    private int elapsedTicks = 0;
     /** 剩余演示 tick；>0 表示仪式进行中。 */
     private int remainingTicks = 0;
     /** 结束后恢复待机的倒计时。 */
@@ -89,6 +93,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     /** 右键启动一次演示仪式。 */
     public void startDemo() {
         this.remainingTicks = DEMO_TICKS;
+        this.elapsedTicks = 0;
         this.resetTicks = 0;
         this.progress = 0.0F;
         this.crystalRings = 0;
@@ -106,14 +111,20 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public void serverTick() {
         if (remainingTicks > 0) {
             remainingTicks--;
+            elapsedTicks++;
             ritualTime++;
-            progress = 1.0F - remainingTicks / (float) DEMO_TICKS;
-            // 每 2 tick 同步一次，够平滑也不至于刷包
+
+            // 每 CRYSTAL_INTERVAL 破一颗，保证每个特效都有完整演出时间
+            if (elapsedTicks % CRYSTAL_INTERVAL == 0 && crystalRings < RING_LAYERS) {
+                onCrystalBroken();
+            }
+
+            // 进度：破晶阶段走 0→1，收尾阶段保持 1
+            float breakSpan = (float) (CRYSTAL_INTERVAL * RING_LAYERS);
+            progress = Math.min(1.0F, elapsedTicks / breakSpan);
+
             if (remainingTicks % 2 == 0 || remainingTicks == 0) {
                 sync();
-            }
-            if (remainingTicks % DEMO_CRYSTAL_INTERVAL == 0) {
-                onCrystalBroken();
             }
             if (remainingTicks == 0) {
                 progress = 1.0F;
