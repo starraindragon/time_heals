@@ -355,26 +355,19 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             return;
         }
         net.minecraft.world.entity.Entity crystal = currentCrystal(server);
-        double cx;
-        double cy;
-        double cz;
-        if (crystal != null) {
-            cx = crystal.getX();
-            cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
-            cz = crystal.getZ();
-        } else {
-            cx = worldPosition.getX() + 0.5D;
-            cy = worldPosition.getY() + 1.25D;
-            cz = worldPosition.getZ() + 0.5D;
+        // 没有可破坏的水晶时不播放爆炸（否则会错误地在机器位置炸开）
+        if (crystal == null) {
+            return;
         }
+        double cx = crystal.getX();
+        double cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
+        double cz = crystal.getZ();
         particles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
         particles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
         particles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
         // 真正摧毁这颗混沌水晶
-        if (crystal != null) {
-            crystal.kill();
-            crystalUuid = null;
-        }
+        crystal.kill();
+        crystalUuid = null;
     }
 
     /** 攻击阶段：沿水晶→守卫的路径生成尖啸音波粒子（5 tick 内飞到）。 */
