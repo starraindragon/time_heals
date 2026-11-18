@@ -32,6 +32,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final int CRYSTAL_INTERVAL = 50;
     /** 锁定期时长（tick）：5 秒，中央水晶向混沌守卫发射追踪粒子束。 */
     public static final int LOCK_TICKS = 100;
+    /** 锁定半径（格）：覆盖整个混沌岛，但不会跨维度/跨岛乱锁。 */
+    public static final double LOCK_RADIUS = 256.0D;
     /** 蓄能期时长（tick）：5 秒，柱子向核心发射粒子束。 */
     public static final int CHARGE_TICKS = 100;
     /** 蓄能结束后的收尾时间（tick）。 */
@@ -129,11 +131,23 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             target = server.getEntity(targetUuid);
         }
         if (target == null || !target.isAlive()) {
-            target = server.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
-                            new net.minecraft.world.phys.AABB(worldPosition).inflate(64.0D),
-                            e -> e.getType().builtInRegistryHolder().key().location().toString()
-                                    .equals("draconicevolution:draconic_guardian"))
-                    .stream().findFirst().orElse(null);
+            // 在半径内扫描混沌守卫：机器放在岛上任意位置都能锁定，
+            // 超出岛屿范围（例如主岛）则不会误锁
+            double maxSq = LOCK_RADIUS * LOCK_RADIUS;
+            double bestSq = Double.MAX_VALUE;
+            for (net.minecraft.world.entity.Entity candidate : server.getAllEntities()) {
+                if (!candidate.isAlive()
+                        || !candidate.getType().builtInRegistryHolder().key().location().toString()
+                                .equals("draconicevolution:draconic_guardian")) {
+                    continue;
+                }
+                double d = candidate.distanceToSqr(worldPosition.getX() + 0.5D,
+                        worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D);
+                if (d <= maxSq && d < bestSq) {
+                    bestSq = d;
+                    target = candidate;
+                }
+            }
             targetUuid = target == null ? null : target.getUUID();
         }
         if (target == null) {
