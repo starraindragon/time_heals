@@ -306,6 +306,59 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * 对锁定的混沌守卫造成一次混沌级伤害。
+     *
+     * <p>用 {@code draconicevolution:chaos_implosion}（属于 DE 的 chaotic 标签），
+     * DE 会把这次伤害视为混沌级，忽略护盾与常规减伤。
+     * 若附近还有存活的水晶（护盾未破），只造成伤害、不强行处决。
+     */
+    private void strikeGuardian() {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        net.minecraft.world.entity.Entity target =
+                targetUuid == null ? null : server.getEntity(targetUuid);
+        if (!(target instanceof net.minecraft.world.entity.LivingEntity living) || !living.isAlive()) {
+            return;
+        }
+
+        var registry = server.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
+        var holder = registry.getHolder(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                "draconicevolution", "chaos_implosion")).orElse(null);
+        net.minecraft.world.damagesource.DamageSource source = holder != null
+                ? new net.minecraft.world.damagesource.DamageSource(holder)
+                : server.damageSources().magic();
+
+        living.invulnerableTime = 0;
+        float amount = Math.max(1000.0F, living.getMaxHealth() * 10.0F);
+        boolean damaged = living.hurt(source, amount);
+
+        // 护盾已破（附近没有存活的水晶）时，补上处决，保证仪式能真正终结守卫
+        if (living.isAlive() && !hasLivingCrystal(server)) {
+            living.setHealth(0.0F);
+            living.die(source);
+        }
+        if (!damaged && !living.isAlive()) {
+            TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已处决 {}", living.getName().getString());
+        }
+    }
+
+    /** 附近是否还有存活的混沌水晶。 */
+    private boolean hasLivingCrystal(net.minecraft.server.level.ServerLevel server) {
+        double maxSq = LOCK_RADIUS * LOCK_RADIUS;
+        for (net.minecraft.world.entity.Entity candidate : server.getAllEntities()) {
+            if (candidate.isAlive()
+                    && isGuardianCrystal(candidate)
+                    && candidate.distanceToSqr(worldPosition.getX() + 0.5D,
+                            worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D) <= maxSq) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** 破晶阶段：四根柱子顶端用 END_ROD 连到混沌守卫的水晶（末影龙连接水晶同款粒子）。 */
     private void spawnDragonLinks() {
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
@@ -471,8 +524,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             double pz = Mth.lerp(tt, sz, ez);
             particles(ParticleTypes.SONIC_BOOM, px, py, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
-        // 最后一步在目标处炸开
+        // 最后一步：命中判定
         if (step >= ATTACK_TICKS) {
+            strikeGuardian();
             for (int i = 0; i < 4; i++) {
                 particles(ParticleTypes.SONIC_BOOM,
                         ex + (server.random.nextDouble() - 0.5D) * 2.0D,
