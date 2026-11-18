@@ -95,10 +95,20 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
         if (device.isRunning()) {
             return;
         }
-        if (!isTimeCrystal(player.getMainHandItem())) {
+        net.minecraft.world.item.ItemStack held = player.getMainHandItem();
+        if (!isTimeCrystal(held)) {
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
                     "message.time_heals.need_time_crystal"), true);
             return;
+        }
+        // 一次仪式消耗一整组（64 个）
+        if (held.getCount() < 64) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                    "message.time_heals.need_full_stack"), true);
+            return;
+        }
+        if (!player.getAbilities().instabuild) {
+            held.shrink(64);
         }
         device.startRitual();
     }

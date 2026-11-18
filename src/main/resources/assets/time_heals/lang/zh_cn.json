@@ -18,5 +18,6 @@
   "subtitles.time_heals.verdict_attack": "时序裁决器：攻击",
   "subtitles.time_heals.verdict_done": "时序裁决器：裁决",
   "subtitles.time_heals.crystal_explode": "混沌水晶：爆炸",
-  "message.time_heals.need_time_crystal": "需要手持时间水晶才能启动"
+  "message.time_heals.need_time_crystal": "需要手持时间水晶才能启动",
+  "message.time_heals.need_full_stack": "需要一整组时间水晶（64 个）才能启动"
 }

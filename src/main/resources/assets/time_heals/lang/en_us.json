@@ -17,5 +17,6 @@
   "subtitles.time_heals.verdict_attack": "Temporal Verdict Device: attacking",
   "subtitles.time_heals.verdict_done": "Temporal Verdict Device: verdict",
   "subtitles.time_heals.crystal_explode": "Chaos Crystal: explodes",
-  "message.time_heals.need_time_crystal": "Hold Time Crystals to activate"
+  "message.time_heals.need_time_crystal": "Hold Time Crystals to activate",
+  "message.time_heals.need_full_stack": "A full stack of Time Crystals (64) is required"
 }
