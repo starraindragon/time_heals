@@ -30,8 +30,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     public static final int DEMO_TICKS = 20 * 20;
     /** 每根柱子上的圆环层数。 */
     public static final int RING_LAYERS = 14;
-    /** 每次破晶的间隔（tick），仅演示用。 */
-    private static final int DEMO_CRYSTAL_INTERVAL = 50;
+    /** 演示时按「层数」均分整段时长：20 秒内正好破 14 次，保证 14 层都能看到。 */
+    private static final int DEMO_CRYSTAL_INTERVAL = DEMO_TICKS / RING_LAYERS;
 
     /** 0 = 待机，后续接入锁定/破晶/蓄能/裁决/收尾。 */
     private int phase = 0;
@@ -148,7 +148,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         }
         int layer = crystalRings;
         crystalRings++;
-        crystalsBroken = Math.min(8, crystalsBroken + 1);
+        crystalsBroken++;
         spawnPillarRings(layer);
         setChanged();
         sync();
