@@ -126,11 +126,52 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
 
         drawProgressRing(pose, buffers, be.getProgress(), time);
         drawPillarRings(pose, buffers, be.getCrystalRings(), time);
+        if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_BREAK && be.hasAim()) {
+            drawBreakBeams(pose, buffers, be.getAimX(), be.getAimY(), be.getAimZ(), time);
+        }
         if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_LOCK && be.hasAim()) {
             drawLockBeam(pose, buffers, be.getAimX(), be.getAimY(), be.getAimZ(), time);
         }
         if (be.getPhase() == VerdictDeviceBlockEntity.PHASE_CHARGE) {
             drawChargeBeams(pose, buffers, time);
+        }
+    }
+
+    /** 破晶阶段：四柱顶端向当前混沌水晶发射 END_ROD 风格光点串（客户端绘制，保证可见）。 */
+    private static void drawBreakBeams(PoseStack pose, MultiBufferSource buffers,
+                                       float aimX, float aimY, float aimZ, float time) {
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityTranslucent(GLOW));
+        Matrix4f mat = pose.last().pose();
+
+        float[] px = {-7.5F, 23.5F, -7.5F, 23.5F};
+        float[] pz = {-7.5F, -7.5F, 23.5F, 23.5F};
+        float ex = aimX * 16.0F;
+        float ey = aimY * 16.0F;
+        float ez = aimZ * 16.0F;
+        int points = 22;
+        float pulse = 0.65F + 0.35F * Mth.sin(time * 0.4F);
+
+        for (int p = 0; p < 4; p++) {
+            float sx = px[p];
+            float sy = 32.0F;
+            float sz = pz[p];
+            for (int i = 0; i < points; i++) {
+                float t = (i / (float) points + time * 0.08F) % 1.0F;
+                float x = Mth.lerp(t, sx, ex);
+                float y = Mth.lerp(t, sy, ey);
+                float z = Mth.lerp(t, sz, ez);
+                glowCross(vc, mat, x, y, z, 0.05F * 16.0F,
+                        (int) (230 * pulse), (int) (245 * pulse), (int) (255 * pulse), 235);
+            }
+        }
+        // 目标水晶处的聚光
+        for (int i = 0; i < 8; i++) {
+            double a = time * 0.2F + i * (Math.PI * 2 / 8);
+            glowCross(vc, mat,
+                    ex + (float) (Math.cos(a) * 0.8F),
+                    ey + Mth.sin(time * 0.3F + i) * 0.8F,
+                    ez + (float) (Math.sin(a) * 0.8F),
+                    0.06F * 16.0F, 255, 255, 255, 240);
         }
     }
 

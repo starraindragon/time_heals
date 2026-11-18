@@ -355,6 +355,12 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             }
         }
         crystalUuid = crystal == null ? null : crystal.getUUID();
+        if (crystal != null) {
+            aimX = (float) (crystal.getX() - (worldPosition.getX() + 0.5D));
+            aimY = (float) (crystal.getY() + crystal.getBbHeight() * 0.5D - worldPosition.getY());
+            aimZ = (float) (crystal.getZ() - (worldPosition.getZ() + 0.5D));
+            hasAim = true;
+        }
         if (crystal != null && !loggedLinkTarget) {
             loggedLinkTarget = true;
             TimeHeals.LOGGER.info("[时间混乱] 破晶连接目标: {} @ {}",
