@@ -105,7 +105,8 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
                         (float) -part.origin.z / 16.0F);
             }
 
-            VertexConsumer vc = buffers.getBuffer(renderType(part.faces.get(0).texture));
+            VertexConsumer vc = buffers.getBuffer(
+                    renderType(part.faces.get(0).texture, part.crystal));
             Matrix4f mat = pose.last().pose();
             int partLight = part.crystal ? LIGHT_FULL : light;
             for (Face face : part.faces) {
@@ -123,8 +124,11 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
         };
     }
 
-    private static RenderType renderType(ResourceLocation tex) {
-        return RENDER_TYPES.computeIfAbsent(tex.toString(), k -> RenderType.entityCutoutNoCull(tex));
+    /** 水晶走半透明渲染，其余部件走镂空不透明渲染。 */
+    private static RenderType renderType(ResourceLocation tex, boolean translucent) {
+        String key = (translucent ? "T:" : "C:") + tex;
+        return RENDER_TYPES.computeIfAbsent(key,
+                k -> translucent ? RenderType.entityTranslucent(tex) : RenderType.entityCutoutNoCull(tex));
     }
 
     /** 按方向画一个四边形；UV 来自 element 的 faces 定义（模型空间 0~32 → 0~1）。 */
