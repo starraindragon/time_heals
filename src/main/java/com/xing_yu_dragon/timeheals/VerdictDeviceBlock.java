@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -56,5 +57,44 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new VerdictDeviceBlockEntity(pos, state);
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (level.isClientSide()) {
+            return;
+        }
+        // 3×3 底座的另外 8 格：用不可见结构块补碰撞
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (dx == 0 && dz == 0) {
+                    continue;
+                }
+                BlockPos partPos = pos.offset(dx, 0, dz);
+                if (level.getBlockState(partPos).canBeReplaced()) {
+                    level.setBlock(partPos, TimeHeals.VERDICT_DEVICE_PART.get().defaultBlockState(), 3);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState,
+                            boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && !level.isClientSide()) {
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dz == 0) {
+                        continue;
+                    }
+                    BlockPos partPos = pos.offset(dx, 0, dz);
+                    if (level.getBlockState(partPos).is(TimeHeals.VERDICT_DEVICE_PART.get())) {
+                        level.removeBlock(partPos, false);
+                    }
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

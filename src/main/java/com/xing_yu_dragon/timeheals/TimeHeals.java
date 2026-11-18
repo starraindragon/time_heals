@@ -55,6 +55,15 @@ public class TimeHeals {
                             .sound(SoundType.METAL)
                             .noOcclusion()));
 
+    /** 不可见的结构块，仅用于给 3×3 底座补碰撞。 */
+    public static final DeferredBlock<VerdictDevicePartBlock> VERDICT_DEVICE_PART =
+            BLOCKS.register("verdict_device_part", () -> new VerdictDevicePartBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(-1.0F, 3600000.0F)
+                            .noOcclusion()
+                            .noLootTable()));
+
     public static final DeferredItem<BlockItem> VERDICT_DEVICE_ITEM =
             ITEMS.register("verdict_device",
                     () -> new BlockItem(VERDICT_DEVICE.get(), new Item.Properties()));
