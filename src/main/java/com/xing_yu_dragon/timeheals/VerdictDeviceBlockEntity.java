@@ -231,8 +231,16 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 newPhase = PHASE_DONE;
                 progress = 1.0F;
             }
+            // 蓄能期持续嗡鸣：音高随时间上升
+            if (phase == PHASE_CHARGE && elapsedTicks % 20 == 0) {
+                float k = (elapsedTicks - lockEndStart(breakEnd)) / (float) CHARGE_TICKS;
+                playAt(net.minecraft.sounds.SoundEvents.CONDUIT_AMBIENT, 1.2F,
+                        0.8F + Math.min(0.7F, k * 0.7F));
+            }
+
             if (newPhase != phase) {
                 phase = newPhase;
+                onPhaseEnter(newPhase);
                 setChanged();
                 sync();
             }
@@ -279,6 +287,26 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         sync();
     }
 
+    private static int lockEndStart(int breakEnd) {
+        return breakEnd;
+    }
+
+    /** 阶段进入时播放对应音效。 */
+    private void onPhaseEnter(int newPhase) {
+        switch (newPhase) {
+            case PHASE_BREAK -> playAt(net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, 1.6F, 1.15F);
+            case PHASE_CHARGE -> playAt(net.minecraft.sounds.SoundEvents.CONDUIT_ACTIVATE, 1.6F, 0.9F);
+            case PHASE_LOCK -> playAt(net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL, 1.4F, 1.3F);
+            case PHASE_ATTACK -> playAt(net.minecraft.sounds.SoundEvents.WARDEN_SONIC_BOOM, 2.0F, 1.0F);
+            case PHASE_DONE -> {
+                playAt(net.minecraft.sounds.SoundEvents.WARDEN_SONIC_CHARGE, 1.8F, 0.9F);
+                playAt(TimeSounds.TIME_BARRIER_BREAK.get(), 2.0F, 0.8F);
+            }
+            default -> {
+            }
+        }
+    }
+
     /** 破晶阶段：四根柱子顶端用 END_ROD 连到混沌守卫的水晶（末影龙连接水晶同款粒子）。 */
     private void spawnDragonLinks() {
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
@@ -305,6 +333,15 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                         1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
         }
+    }
+
+    /** 在机器位置播放音效（以机器为中心，全维度玩家可听）。 */
+    private void playAt(net.minecraft.sounds.SoundEvent sound, float volume, float pitch) {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+        level.playSound(null, worldPosition, sound, net.minecraft.sounds.SoundSource.BLOCKS,
+                volume, pitch);
     }
 
     /**
@@ -437,6 +474,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             return;
         }
         spawnRingLayer(server, layer, 20, 0.0F, true);
+        playAt(TimeSounds.TIME_EROSION.get(), 1.2F, 0.9F + layer * 0.05F);
         spawnCrystalExplosion();
     }
 
