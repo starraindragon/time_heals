@@ -274,6 +274,43 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         sync();
     }
 
+    /** 破晶阶段：四根柱子顶端用 END_ROD 连到中央水晶（末影龙治疗水晶同款粒子）。 */
+    private void spawnDragonLinks() {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        double cx = worldPosition.getX() + 0.5D;
+        double cy = worldPosition.getY() + 1.25D;
+        double cz = worldPosition.getZ() + 0.5D;
+        float[] px = {-7.5F / 16.0F, 23.5F / 16.0F, -7.5F / 16.0F, 23.5F / 16.0F};
+        float[] pz = {-7.5F / 16.0F, -7.5F / 16.0F, 23.5F / 16.0F, 23.5F / 16.0F};
+        int points = 12;
+        for (int p = 0; p < 4; p++) {
+            double sx = worldPosition.getX() + px[p];
+            double sy = worldPosition.getY() + 2.0D;
+            double sz = worldPosition.getZ() + pz[p];
+            for (int i = 0; i < points; i++) {
+                double t = (i + server.random.nextDouble()) / points;
+                server.sendParticles(ParticleTypes.END_ROD,
+                        Mth.lerp(t, sx, cx), Mth.lerp(t, sy, cy), Mth.lerp(t, sz, cz),
+                        1, 0.0D, 0.0D, 0.0D, 0.0D);
+            }
+        }
+    }
+
+    /** 破晶瞬间：核心处爆炸粒子。 */
+    private void spawnCrystalExplosion() {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        double cx = worldPosition.getX() + 0.5D;
+        double cy = worldPosition.getY() + 1.25D;
+        double cz = worldPosition.getZ() + 0.5D;
+        server.sendParticles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
+        server.sendParticles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
+        server.sendParticles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
+    }
+
     /** 攻击阶段：沿水晶→守卫的路径生成尖啸音波粒子（5 tick 内飞到）。 */
     private void fireSonicAttack(int step) {
         if (!(level instanceof net.minecraft.server.level.ServerLevel server) || !hasAim) {
@@ -313,6 +350,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             return;
         }
         spawnRingLayer(server, layer, 20, 0.0F, true);
+        spawnCrystalExplosion();
     }
 
     /** 在第 layer 层、四根柱子上铺一圈粒子。points 为每圈点数，phase 让圆环缓慢转动。 */
