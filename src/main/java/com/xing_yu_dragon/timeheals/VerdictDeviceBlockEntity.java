@@ -252,9 +252,10 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             }
             if (remainingTicks == 0) {
                 progress = 1.0F;
-                resetTicks = 40;
                 setChanged();
                 sync();
+                // 一次性装置：仪式结束即自毁，原地留下哭泣的黑曜石
+                convertToCryingObsidian();
             }
         } else if (resetTicks > 0) {
             resetTicks--;
@@ -265,6 +266,21 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 sync();
             }
         }
+    }
+
+    /** 仪式结束：机器自毁，原地变成哭泣的黑曜石。 */
+    private void convertToCryingObsidian() {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        BlockPos pos = worldPosition;
+        // 先播完这一下的粒子与音效，再把方块换掉（换掉后 BE 会被移除）
+        particles(ParticleTypes.END_ROD, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D,
+                40, 1.0D, 1.0D, 1.0D, 0.1D);
+        playAt(TimeSounds.VERDICT_DONE.get(), 2.0F, 0.7F);
+        server.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN
+                .defaultBlockState());
+        TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已在 {} 自毁为哭泣的黑曜石", pos);
     }
 
     private void sync() {
