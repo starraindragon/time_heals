@@ -34,6 +34,10 @@ navigation:
 - [时间水晶块](blocks/time-crystal-block.md)
 - [2 重压缩时间水晶块](blocks/2x-time-crystal-block.md)
 
+## 装置
+
+- [时序裁决器](blocks/verdict-device.md)
+
 ## 机制
 
 - [时间混乱](effects/time-confusion.md)
