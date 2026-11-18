@@ -10,5 +10,62 @@
     "sounds": [
       "time_heals:effect/time_barrier_break"
     ]
+  },
+  "verdict_break": {
+    "subtitle": "subtitles.time_heals.verdict_break",
+    "sounds": [
+      "time_heals:effect/time_erosion"
+    ]
+  },
+  "verdict_charge": {
+    "subtitle": "subtitles.time_heals.verdict_charge",
+    "sounds": [
+      {
+        "name": "minecraft:block.conduit.activate",
+        "type": "event"
+      }
+    ]
+  },
+  "verdict_charge_loop": {
+    "subtitle": "subtitles.time_heals.verdict_charge_loop",
+    "sounds": [
+      {
+        "name": "minecraft:block.conduit.ambient",
+        "type": "event"
+      }
+    ]
+  },
+  "verdict_lock": {
+    "subtitle": "subtitles.time_heals.verdict_lock",
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event"
+      }
+    ]
+  },
+  "verdict_attack": {
+    "subtitle": "subtitles.time_heals.verdict_attack",
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.sonic_boom",
+        "type": "event"
+      }
+    ]
+  },
+  "verdict_done": {
+    "subtitle": "subtitles.time_heals.verdict_done",
+    "sounds": [
+      "time_heals:effect/time_barrier_break"
+    ]
+  },
+  "crystal_explode": {
+    "subtitle": "subtitles.time_heals.crystal_explode",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "type": "event"
+      }
+    ]
   }
 }

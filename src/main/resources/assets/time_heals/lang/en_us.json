@@ -9,5 +9,12 @@
   "message.time_heals.need_crystal": "Missing time crystal",
   "key.time_heals.category": "Time Heals",
   "key.time_heals.accelerate": "Time Acceleration",
-  "block.time_heals.verdict_device": "Temporal Verdict Device"
+  "block.time_heals.verdict_device": "Temporal Verdict Device",
+  "subtitles.time_heals.verdict_break": "Temporal Verdict Device: crystal breaking",
+  "subtitles.time_heals.verdict_charge": "Temporal Verdict Device: charging",
+  "subtitles.time_heals.verdict_charge_loop": "Temporal Verdict Device: charging",
+  "subtitles.time_heals.verdict_lock": "Temporal Verdict Device: locking on",
+  "subtitles.time_heals.verdict_attack": "Temporal Verdict Device: attacking",
+  "subtitles.time_heals.verdict_done": "Temporal Verdict Device: verdict",
+  "subtitles.time_heals.crystal_explode": "Chaos Crystal: explodes"
 }

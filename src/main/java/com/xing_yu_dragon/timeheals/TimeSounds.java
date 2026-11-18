@@ -29,6 +29,30 @@ public final class TimeSounds {
             SOUNDS.register("time_barrier_break", () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "time_barrier_break")));
 
+    /** 仪式音效：复用原版音色，但字幕写成「时序裁决器：xxx」。 */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_BREAK =
+            SOUNDS.register("verdict_break", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_break")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_CHARGE =
+            SOUNDS.register("verdict_charge", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_charge")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_CHARGE_LOOP =
+            SOUNDS.register("verdict_charge_loop", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_charge_loop")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_LOCK =
+            SOUNDS.register("verdict_lock", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_lock")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_ATTACK =
+            SOUNDS.register("verdict_attack", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_attack")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> VERDICT_DONE =
+            SOUNDS.register("verdict_done", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "verdict_done")));
+    /** 混沌水晶爆炸。 */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRYSTAL_EXPLODE =
+            SOUNDS.register("crystal_explode", () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "crystal_explode")));
+
     private TimeSounds() {
     }
 }

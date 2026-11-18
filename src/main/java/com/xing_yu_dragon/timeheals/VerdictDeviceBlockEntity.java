@@ -236,7 +236,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             // 蓄能期持续嗡鸣：音高随时间上升
             if (phase == PHASE_CHARGE && elapsedTicks % 20 == 0) {
                 float k = (elapsedTicks - lockEndStart(breakEnd)) / (float) CHARGE_TICKS;
-                playAt(net.minecraft.sounds.SoundEvents.CONDUIT_AMBIENT, 1.2F,
+                playAt(TimeSounds.VERDICT_CHARGE_LOOP.get(), 1.2F,
                         0.8F + Math.min(0.7F, k * 0.7F));
             }
 
@@ -296,14 +296,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     /** 阶段进入时播放对应音效。 */
     private void onPhaseEnter(int newPhase) {
         switch (newPhase) {
-            case PHASE_BREAK -> playAt(net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, 1.6F, 1.15F);
-            case PHASE_CHARGE -> playAt(net.minecraft.sounds.SoundEvents.CONDUIT_ACTIVATE, 1.6F, 0.9F);
-            case PHASE_LOCK -> playAt(net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL, 1.4F, 1.3F);
-            case PHASE_ATTACK -> playAt(net.minecraft.sounds.SoundEvents.WARDEN_SONIC_BOOM, 2.0F, 1.0F);
-            case PHASE_DONE -> {
-                playAt(net.minecraft.sounds.SoundEvents.WARDEN_SONIC_CHARGE, 1.8F, 0.9F);
-                playAt(TimeSounds.TIME_BARRIER_BREAK.get(), 2.0F, 0.8F);
-            }
+            case PHASE_BREAK -> playAt(TimeSounds.VERDICT_BREAK.get(), 1.6F, 1.15F);
+            case PHASE_CHARGE -> playAt(TimeSounds.VERDICT_CHARGE.get(), 1.6F, 0.9F);
+            case PHASE_LOCK -> playAt(TimeSounds.VERDICT_LOCK.get(), 1.4F, 1.3F);
+            case PHASE_ATTACK -> playAt(TimeSounds.VERDICT_ATTACK.get(), 2.0F, 1.0F);
+            case PHASE_DONE -> playAt(TimeSounds.VERDICT_DONE.get(), 2.0F, 0.8F);
             default -> {
             }
         }
@@ -344,6 +341,15 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         }
         level.playSound(null, worldPosition, sound, net.minecraft.sounds.SoundSource.BLOCKS,
                 volume, pitch);
+    }
+
+    /** 在指定坐标播放音效。 */
+    private void playAtPos(net.minecraft.sounds.SoundEvent sound,
+                           double x, double y, double z, float volume, float pitch) {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+        level.playSound(null, x, y, z, sound, net.minecraft.sounds.SoundSource.BLOCKS, volume, pitch);
     }
 
     /**
@@ -427,6 +433,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         double cx = crystal.getX();
         double cy = crystal.getY() + crystal.getBbHeight() * 0.5D;
         double cz = crystal.getZ();
+        playAtPos(TimeSounds.CRYSTAL_EXPLODE.get(), cx, cy, cz, 2.0F, 1.0F);
         particles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
         particles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
         particles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
@@ -476,7 +483,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             return;
         }
         spawnRingLayer(server, layer, 20, 0.0F, true);
-        playAt(TimeSounds.TIME_EROSION.get(), 1.2F, 0.9F + layer * 0.05F);
+        playAt(TimeSounds.VERDICT_BREAK.get(), 1.2F, 0.9F + layer * 0.05F);
         spawnCrystalExplosion();
     }
 

@@ -10,5 +10,12 @@
   "message.time_heals.need_crystal": "缺少时间水晶",
   "key.time_heals.category": "Time Heals",
   "key.time_heals.accelerate": "时间加速（对准机器按下）",
-  "block.time_heals.verdict_device": "时序裁决器"
+  "block.time_heals.verdict_device": "时序裁决器",
+  "subtitles.time_heals.verdict_break": "时序裁决器：破晶",
+  "subtitles.time_heals.verdict_charge": "时序裁决器：蓄能",
+  "subtitles.time_heals.verdict_charge_loop": "时序裁决器：蓄能",
+  "subtitles.time_heals.verdict_lock": "时序裁决器：锁定",
+  "subtitles.time_heals.verdict_attack": "时序裁决器：攻击",
+  "subtitles.time_heals.verdict_done": "时序裁决器：裁决",
+  "subtitles.time_heals.crystal_explode": "混沌水晶：爆炸"
 }
