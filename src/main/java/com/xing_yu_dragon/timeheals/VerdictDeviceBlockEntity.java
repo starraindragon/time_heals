@@ -297,10 +297,27 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             double sz = worldPosition.getZ() + pz[p];
             for (int i = 0; i < points; i++) {
                 double t = (i + server.random.nextDouble()) / points;
-                server.sendParticles(ParticleTypes.END_ROD,
+                particles(ParticleTypes.END_ROD,
                         Mth.lerp(t, sx, cx), Mth.lerp(t, sy, cy), Mth.lerp(t, sz, cz),
                         1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
+        }
+    }
+
+    /**
+     * 强制把粒子发给该维度所有玩家。
+     *
+     * <p>{@code ServerLevel#sendParticles} 默认只发给 32 格内的玩家；
+     * 混沌岛上的水晶可能离得很远，必须显式逐玩家发送（force=true）。
+     */
+    private void particles(net.minecraft.core.particles.ParticleOptions type,
+                           double x, double y, double z, int count,
+                           double dx, double dy, double dz, double speed) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        for (net.minecraft.server.level.ServerPlayer player : server.getPlayers(p -> true)) {
+            server.sendParticles(player, type, true, x, y, z, count, dx, dy, dz, speed);
         }
     }
 
@@ -350,9 +367,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             cy = worldPosition.getY() + 1.25D;
             cz = worldPosition.getZ() + 0.5D;
         }
-        server.sendParticles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
-        server.sendParticles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
-        server.sendParticles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
+        particles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
+        particles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
+        particles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
         // 真正摧毁这颗混沌水晶
         if (crystal != null) {
             crystal.kill();
@@ -379,12 +396,12 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             double px = Mth.lerp(tt, sx, ex);
             double py = Mth.lerp(tt, sy, ey);
             double pz = Mth.lerp(tt, sz, ez);
-            server.sendParticles(ParticleTypes.SONIC_BOOM, px, py, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            particles(ParticleTypes.SONIC_BOOM, px, py, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
         // 最后一步在目标处炸开
         if (step >= ATTACK_TICKS) {
             for (int i = 0; i < 4; i++) {
-                server.sendParticles(ParticleTypes.SONIC_BOOM,
+                particles(ParticleTypes.SONIC_BOOM,
                         ex + (server.random.nextDouble() - 0.5D) * 2.0D,
                         ey + (server.random.nextDouble() - 0.5D) * 2.0D,
                         ez + (server.random.nextDouble() - 0.5D) * 2.0D,
@@ -426,9 +443,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 double a = (Math.PI * 2.0D) * i / points + phase;
                 double px = cx + Math.cos(a) * 0.34D;
                 double pz = cz + Math.sin(a) * 0.34D;
-                server.sendParticles(dust, px, y0 + y, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                particles(dust, px, y0 + y, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 if (burst && i % 5 == 0) {
-                    server.sendParticles(ParticleTypes.END_ROD, px, y0 + y, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    particles(ParticleTypes.END_ROD, px, y0 + y, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
