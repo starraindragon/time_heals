@@ -72,6 +72,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
 
     /** 已进行 tick。 */
     private int elapsedTicks = 0;
+    /** 是否已经打印过连接目标（避免刷屏）。 */
+    private boolean loggedLinkTarget = false;
     /** 剩余演示 tick；>0 表示仪式进行中。 */
     private int remainingTicks = 0;
     /** 结束后恢复待机的倒计时。 */
@@ -183,6 +185,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         this.crystalsBroken = 0;
         this.ritualTime = 0;
         this.elapsedTicks = 0;
+        this.loggedLinkTarget = false;
         this.phase = 1;
         setChanged();
         sync();
@@ -345,8 +348,25 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 crystal = candidate;
             }
         }
+        if (crystal == null && targetUuid != null) {
+            net.minecraft.world.entity.Entity guardian = server.getEntity(targetUuid);
+            if (guardian instanceof net.minecraft.world.entity.LivingEntity living && living.isAlive()) {
+                crystal = living;
+            }
+        }
         crystalUuid = crystal == null ? null : crystal.getUUID();
+        if (crystal != null && !loggedLinkTarget) {
+            loggedLinkTarget = true;
+            TimeHeals.LOGGER.info("[时间混乱] 破晶连接目标: {} @ {}",
+                    crystal.getName().getString(), crystal.blockPosition());
+        }
         return crystal;
+    }
+
+    /** 是否是混沌守卫的水晶（只有水晶才能在破晶时被摧毁）。 */
+    private static boolean isGuardianCrystal(net.minecraft.world.entity.Entity entity) {
+        return entity.getType().builtInRegistryHolder().key().location().toString()
+                .equals("draconicevolution:guardian_crystal");
     }
 
     /** 破晶瞬间：核心处爆炸粒子。 */
@@ -365,9 +385,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         particles(ParticleTypes.EXPLOSION, cx, cy, cz, 3, 0.4D, 0.4D, 0.4D, 0.0D);
         particles(ParticleTypes.END_ROD, cx, cy, cz, 24, 0.6D, 0.6D, 0.6D, 0.15D);
         particles(ParticleTypes.ELECTRIC_SPARK, cx, cy, cz, 16, 0.5D, 0.5D, 0.5D, 0.2D);
-        // 真正摧毁这颗混沌水晶
-        crystal.kill();
-        crystalUuid = null;
+        // 只有混沌水晶会被摧毁；守卫本体只吃粒子
+        if (isGuardianCrystal(crystal)) {
+            crystal.kill();
+            crystalUuid = null;
+        }
     }
 
     /** 攻击阶段：沿水晶→守卫的路径生成尖啸音波粒子（5 tick 内飞到）。 */
