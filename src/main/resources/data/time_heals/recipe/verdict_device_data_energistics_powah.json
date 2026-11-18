@@ -1,0 +1,148 @@
+{
+  "type": "draconicevolution:fusion_crafting",
+  "catalyst": {
+    "item": "draconicevolution:draconic_staff"
+  },
+  "ingredients": [
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:time_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "kubejs:time_crystal_block"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "kubejs:time_crystal_block"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "kubejs:time_crystal_block"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "kubejs:time_crystal_block"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_capacitor"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_capacitor"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_bow"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_bow"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:data_sanctum_interface"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "data_energistics:data_sanctum_interface"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "powah:capacitor_nitro"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "powah:capacitor_nitro"
+      }
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "time_heals:verdict_device"
+  },
+  "techLevel": "draconic",
+  "totalEnergy": 256000000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "draconicevolution"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kubejs"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "draconicevolution:draconic_staff"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "kubejs:time_crystal_block"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "data_energistics:time_core"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "powah"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "powah:capacitor_nitro"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "data_energistics"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "data_energistics:data_sanctum_interface"
+    }
+  ]
+}
