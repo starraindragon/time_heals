@@ -47,7 +47,7 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
     private static final ResourceLocation PARTS =
             ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, "models/block/verdict_device_parts.json");
 
-    private static final String TEX_ROOT = "block/verdict_device/";
+    private static final String TEX_ROOT = "textures/block/verdict_device/";
 
     /** 每帧 15° = 0.75°/tick。 */
     private static final float DEG_PER_TICK = 0.75F;
@@ -107,8 +107,9 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
 
             VertexConsumer vc = buffers.getBuffer(renderType(part.faces.get(0).texture));
             Matrix4f mat = pose.last().pose();
+            int partLight = part.crystal ? LIGHT_FULL : light;
             for (Face face : part.faces) {
-                drawFace(vc, mat, part, face, light, overlay);
+                drawFace(vc, mat, part, face, partLight, overlay);
             }
             pose.popPose();
         }
@@ -186,12 +187,11 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
     private static void vertex(VertexConsumer vc, Matrix4f mat,
                                float x, float y, float z, float u, float v,
                                float nx, float ny, float nz, int light, int overlay) {
-        // 先用全亮光照，排除「光照贴图为 0 导致整块发黑」这一可能
         vc.addVertex(mat, x / 16.0F, y / 16.0F, z / 16.0F)
                 .setColor(255, 255, 255, 255)
                 .setUv(u, v)
                 .setOverlay(overlay)
-                .setLight(LIGHT_FULL)
+                .setLight(light)
                 .setNormal(nx, ny, nz);
     }
 
@@ -232,7 +232,8 @@ public class VerdictDeviceRenderer implements BlockEntityRenderer<VerdictDeviceB
                         key = key.substring(1);
                     }
                     String texName = textures.has(key) ? textures.get(key).getAsString() : key;
-                    f.texture = ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID, TEX_ROOT + texName);
+                    f.texture = ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID,
+                            TEX_ROOT + texName + ".png");
                     p.faces.add(f);
                 }
                 String firstTex = p.faces.isEmpty() ? "" : p.faces.get(0).texture.getPath();
