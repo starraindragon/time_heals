@@ -38,6 +38,10 @@ navigation:
 
 - [时序裁决器](blocks/verdict-device.md)
 
+## 本模组物品
+
+- [本模组物品一览](items/time-heals-items.md)
+
 ## 机制
 
 - [时间混乱](effects/time-confusion.md)
