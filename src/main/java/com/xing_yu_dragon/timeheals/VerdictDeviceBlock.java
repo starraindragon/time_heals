@@ -121,6 +121,23 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
                 .equals("kubejs:time_crystal");
     }
 
+    /** 仪式期间不可挖掘。 */
+    @Override
+    protected float getDestroyProgress(BlockState state, Player player,
+                                       net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device
+                && device.isRitualActive()) {
+            return 0.0F;
+        }
+        return super.getDestroyProgress(state, player, level, pos);
+    }
+
+    /** 仪式期间免疫爆炸（返回极高的抗性）。 */
+    @Override
+    public float getExplosionResistance() {
+        return 3600000.0F;
+    }
+
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state,
                             net.minecraft.world.entity.LivingEntity placer,

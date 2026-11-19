@@ -113,6 +113,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         return progress;
     }
 
+    /** 仪式是否正在进行（此时机器不可被破坏/炸毁）。 */
+    public boolean isRitualActive() {
+        return phase >= PHASE_BREAK && phase <= PHASE_ATTACK;
+    }
+
     public boolean isUsedUnbreakableSword() {
         return usedUnbreakableSword;
     }
