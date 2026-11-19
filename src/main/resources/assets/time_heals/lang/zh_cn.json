@@ -22,5 +22,6 @@
   "message.time_heals.need_full_stack": "需要一整组时间水晶（64 个）才能启动",
   "block.time_heals.verdict_remains": "裁决器残骸",
   "item.time_heals.damage_draconic_staff": "报废的神龙权杖",
-  "itemGroup.time_heals": "时间工程"
+  "itemGroup.time_heals": "时间工程",
+  "death.attack.temporal_backlash": "您在时序反噬造成的爆炸中迷失"
 }

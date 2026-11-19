@@ -293,7 +293,45 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         if (usedUnbreakableSword) {
             spawnWornSword(server, pos);
         }
+        // 1% 时序反噬：5 格内所有玩家承受混沌级伤害
+        triggerTemporalBacklash(server, pos);
         TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已在 {} 自毁为哭泣的黑曜石", pos);
+    }
+
+    /** 自毁时的 1% 时序反噬。 */
+    private void triggerTemporalBacklash(net.minecraft.server.level.ServerLevel server, BlockPos pos) {
+        if (server.random.nextFloat() >= 0.01F) {
+            return;
+        }
+        net.minecraft.world.phys.AABB area = new net.minecraft.world.phys.AABB(pos).inflate(5.0D);
+        java.util.List<net.minecraft.world.entity.player.Player> players =
+                server.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, area);
+        if (players.isEmpty()) {
+            return;
+        }
+        TimeHeals.LOGGER.info("[时间混乱] 时序反噬触发，影响 {} 名玩家", players.size());
+        net.minecraft.core.Holder<net.minecraft.world.damagesource.DamageType> holder = server.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.resources.ResourceKey.create(
+                        net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(TimeHeals.MODID,
+                                "temporal_backlash")));
+        net.minecraft.world.damagesource.DamageSource source =
+                new net.minecraft.world.damagesource.DamageSource(holder);
+        for (net.minecraft.world.entity.player.Player player : players) {
+            player.invulnerableTime = 0;
+            player.hurt(source, 50000.0F);
+        }
+        // 视觉与听觉反馈
+        for (int i = 0; i < 40; i++) {
+            double dx = (server.random.nextDouble() - 0.5D) * 8.0D;
+            double dy = server.random.nextDouble() * 3.0D;
+            double dz = (server.random.nextDouble() - 0.5D) * 8.0D;
+            server.sendParticles(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+                    pos.getX() + 0.5D + dx, pos.getY() + 1.0D + dy, pos.getZ() + 0.5D + dz,
+                    1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        playAt(TimeSounds.CRYSTAL_EXPLODE.get(), 3.0F, 0.5F);
     }
 
     /** 在哭泣的黑曜石上方生成一把只剩 1 点耐久的时间之剑。 */
