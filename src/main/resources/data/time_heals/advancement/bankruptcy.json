@@ -1,0 +1,20 @@
+{
+  "display": {
+    "icon": { "id": "time_heals:verdict_device" },
+    "title": { "translate": "advancements.time_heals.bankruptcy.title" },
+    "description": { "translate": "advancements.time_heals.bankruptcy.description" },
+    "background": "minecraft:textures/block/crying_obsidian.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_device": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": "time_heals:verdict_device" } ]
+      }
+    }
+  }
+}

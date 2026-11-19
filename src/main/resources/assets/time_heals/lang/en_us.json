@@ -22,5 +22,7 @@
   "block.time_heals.verdict_remains": "Verdict Device Remains",
   "item.time_heals.damage_draconic_staff": "Broken Draconic Staff",
   "itemGroup.time_heals": "Time Heals",
-  "death.attack.temporal_backlash": "You were lost in the explosion caused by Temporal Backlash"
+  "death.attack.temporal_backlash": "You were lost in the explosion caused by Temporal Backlash",
+  "advancements.time_heals.bankruptcy.title": "Bankruptcy",
+  "advancements.time_heals.bankruptcy.description": "Looking at that pile of Draconic materials and two bows in the fusion core, are you sure you still want to press it?"
 }

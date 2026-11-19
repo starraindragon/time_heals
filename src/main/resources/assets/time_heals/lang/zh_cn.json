@@ -23,5 +23,7 @@
   "block.time_heals.verdict_remains": "裁决器残骸",
   "item.time_heals.damage_draconic_staff": "报废的神龙权杖",
   "itemGroup.time_heals": "时间工程",
-  "death.attack.temporal_backlash": "您在时序反噬造成的爆炸中迷失"
+  "death.attack.temporal_backlash": "您在时序反噬造成的爆炸中迷失",
+  "advancements.time_heals.bankruptcy.title": "倾家荡产",
+  "advancements.time_heals.bankruptcy.description": "看着聚合器里那堆神龙级的材料和两把神龙弓，你确定你还要按下去吗？"
 }
