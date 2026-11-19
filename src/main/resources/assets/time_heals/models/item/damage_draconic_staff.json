@@ -1,3 +1,6 @@
 {
-  "parent": "draconicevolution:item/draconic_staff"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "draconicevolution:item/tools/draconic_staff"
+  }
 }

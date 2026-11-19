@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "time_heals:block/verdict_remains" }
+    "dusted=0": { "model": "time_heals:block/verdict_remains" },
+    "dusted=1": { "model": "time_heals:block/verdict_remains" },
+    "dusted=2": { "model": "time_heals:block/verdict_remains" },
+    "dusted=3": { "model": "time_heals:block/verdict_remains" }
   }
 }
