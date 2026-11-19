@@ -401,8 +401,10 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             living.setHealth(0.0F);
             living.die(source);
         }
-        if (!damaged && !living.isAlive()) {
+        if (!living.isAlive()) {
             TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已处决 {}", living.getName().getString());
+            // 混沌守卫确由这次裁决伤害击杀 → 发放成就
+            TimeAdvancements.eventNearby(server, worldPosition, 32.0D, "godslayer");
         }
     }
 
