@@ -127,6 +127,54 @@ public final class TimeHealsEvents {
                         })));
     }
 
+    /** 测试快捷：/timeheals give —— 直接发一套测试物品。 */
+    @SubscribeEvent
+    public static void onRegisterGiveCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("timeheals")
+                .then(net.minecraft.commands.Commands.literal("give")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            int given = 0;
+
+                            // 机器
+                            var device = new net.minecraft.world.item.ItemStack(TimeHeals.VERDICT_DEVICE_ITEM.get());
+                            if (!player.getInventory().add(device)) {
+                                player.drop(device, false);
+                            }
+                            given++;
+
+                            // 一整组时间水晶（KubeJS 物品）
+                            net.minecraft.world.item.Item crystal = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+                                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("kubejs", "time_crystal"));
+                            if (crystal != net.minecraft.world.item.Items.AIR) {
+                                var stack = new net.minecraft.world.item.ItemStack(crystal, 64);
+                                if (!player.getInventory().add(stack)) {
+                                    player.drop(stack, false);
+                                }
+                                given++;
+                            }
+
+                            // 不可破坏的时间之剑
+                            net.minecraft.world.item.Item sword = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+                                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("kubejs", "time_sword"));
+                            if (sword != net.minecraft.world.item.Items.AIR) {
+                                var stack = new net.minecraft.world.item.ItemStack(sword);
+                                stack.set(net.minecraft.core.component.DataComponents.UNBREAKABLE,
+                                        new net.minecraft.world.item.component.Unbreakable(true));
+                                if (!player.getInventory().add(stack)) {
+                                    player.drop(stack, false);
+                                }
+                                given++;
+                            }
+
+                            int total = given;
+                            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
+                                    .literal("已发放测试物品：" + total + " 类"), false);
+                            return given;
+                        })));
+    }
+
     /** 调试命令：/timeaccel —— 给视线 10 格内的方块施加时间加速。 */
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
