@@ -32,7 +32,10 @@ public class VerdictDeviceItemDE extends BlockItem implements IFusionDataTransfe
     @Override
     public void transferIngredientData(ItemStack result, IFusionInventory fusionInventory,
                                        HolderLookup.Provider provider) {
-        for (IFusionInjector injector : fusionInventory.getInjectors()) {
+        var injectors = fusionInventory.getInjectors();
+        com.xing_yu_dragon.timeheals.TimeHeals.LOGGER.info(
+                "[debug] 融合产物数据转移: 注入器数量={}", injectors.size());
+        for (IFusionInjector injector : injectors) {
             ItemStack stack = injector.getInjectorStack();
             if (stack.isEmpty()) {
                 continue;
@@ -40,8 +43,13 @@ public class VerdictDeviceItemDE extends BlockItem implements IFusionDataTransfe
             if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(TIME_SWORD)) {
                 continue;
             }
-            if (stack.has(DataComponents.UNBREAKABLE)) {
+            boolean unbreakable = stack.has(DataComponents.UNBREAKABLE);
+            com.xing_yu_dragon.timeheals.TimeHeals.LOGGER.info(
+                    "[debug] 注入器物品: {} 不可破坏={} damage={}", stack.getItem(),
+                    unbreakable, stack.getOrDefault(DataComponents.DAMAGE, 0));
+            if (unbreakable) {
                 result.set(TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), true);
+                com.xing_yu_dragon.timeheals.TimeHeals.LOGGER.info("[debug] 已标记产物为不可破坏之剑合成");
                 return;
             }
         }
