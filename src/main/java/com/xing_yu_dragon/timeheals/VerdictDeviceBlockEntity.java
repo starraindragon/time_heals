@@ -289,8 +289,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         particles(ParticleTypes.END_ROD, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D,
                 40, 1.0D, 1.0D, 1.0D, 0.1D);
         playAt(TimeSounds.VERDICT_DONE.get(), 2.0F, 0.7F);
-        server.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN
-                .defaultBlockState());
+        server.setBlockAndUpdate(pos, TimeHeals.VERDICT_REMAINS.get().defaultBlockState());
         if (usedUnbreakableSword) {
             spawnWornSword(server, pos);
         }

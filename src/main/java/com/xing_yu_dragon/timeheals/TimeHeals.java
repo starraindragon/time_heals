@@ -65,6 +65,26 @@ public class TimeHeals {
                             .noOcclusion()
                             .noLootTable()));
 
+    /** 裁决器自毁后的残骸（可刷）。 */
+    public static final DeferredBlock<VerdictRemainsBlock> VERDICT_REMAINS =
+            BLOCKS.register("verdict_remains", () -> new VerdictRemainsBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_BLACK)
+                            .strength(50.0F, 1200.0F)
+                            .sound(SoundType.STONE)
+                            .noLootTable()));
+
+    public static final net.neoforged.neoforge.registries.DeferredHolder<BlockEntityType<?>,
+            BlockEntityType<VerdictRemainsBlockEntity>> VERDICT_REMAINS_BE =
+            BLOCK_ENTITIES.register("verdict_remains",
+                    () -> BlockEntityType.Builder.of(VerdictRemainsBlockEntity::new,
+                            VERDICT_REMAINS.get()).build(null));
+
+    /** 报废的神龙权杖（刷残骸获得）。 */
+    public static final DeferredItem<Item> DAMAGE_DRACONIC_STAFF =
+            ITEMS.register("damage_draconic_staff",
+                    () -> new DamageDraconicStaffItem(new Item.Properties().stacksTo(1)));
+
     public static final DeferredItem<BlockItem> VERDICT_DEVICE_ITEM =
             ITEMS.register("verdict_device", () -> {
                 if (net.neoforged.fml.ModList.get().isLoaded("draconicevolution")) {
@@ -108,6 +128,7 @@ public class TimeHeals {
         public static void onBuildTab(BuildCreativeModeTabContentsEvent event) {
             if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
                 event.accept(VERDICT_DEVICE_ITEM);
+                event.accept(DAMAGE_DRACONIC_STAFF);
             }
         }
     }
