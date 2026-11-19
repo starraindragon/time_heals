@@ -127,6 +127,32 @@ public final class TimeHealsEvents {
                         })));
     }
 
+    /** 调试：/timeheals backlash [self] —— 在脚下触发一次时序反噬。 */
+    @SubscribeEvent
+    public static void onRegisterBacklashCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("timeheals")
+                .then(net.minecraft.commands.Commands.literal("backlash")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            int hit = TemporalBacklash.trigger((net.minecraft.server.level.ServerLevel)
+                                    player.level(), player.blockPosition(), false, player);
+                            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
+                                    .literal("时序反噬已触发，命中 " + hit + " 名玩家（不含自己）"), false);
+                            return hit;
+                        })
+                        .then(net.minecraft.commands.Commands.literal("self")
+                                .executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    int hit = TemporalBacklash.trigger(
+                                            (net.minecraft.server.level.ServerLevel) player.level(),
+                                            player.blockPosition(), true, player);
+                                    context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
+                                            .literal("时序反噬已触发（含自己），命中 " + hit + " 名玩家"), false);
+                                    return hit;
+                                }))));
+    }
+
     /** 测试快捷：/timeheals give —— 直接发一套测试物品。 */
     @SubscribeEvent
     public static void onRegisterGiveCommand(RegisterCommandsEvent event) {
