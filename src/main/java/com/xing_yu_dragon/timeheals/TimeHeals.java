@@ -83,6 +83,11 @@ public class TimeHeals {
                     () -> BlockEntityType.Builder.of(VerdictRemainsBlockEntity::new,
                             VERDICT_REMAINS.get()).build(null));
 
+    /** 残骸方块的物品形式（仅用于创造栏摆放）。 */
+    public static final DeferredItem<BlockItem> VERDICT_REMAINS_ITEM =
+            ITEMS.register("verdict_remains",
+                    () -> new BlockItem(VERDICT_REMAINS.get(), new Item.Properties()));
+
     /** 报废的神龙权杖（刷残骸获得）。 */
     public static final DeferredItem<Item> DAMAGE_DRACONIC_STAFF =
             ITEMS.register("damage_draconic_staff",
@@ -130,6 +135,7 @@ public class TimeHeals {
                     .icon(() -> new net.minecraft.world.item.ItemStack(VERDICT_DEVICE_ITEM.get()))
                     .displayItems((params, output) -> {
                         output.accept(VERDICT_DEVICE_ITEM.get());
+                        output.accept(VERDICT_REMAINS_ITEM.get());
                         output.accept(DAMAGE_DRACONIC_STAFF.get());
                     })
                     .build());
