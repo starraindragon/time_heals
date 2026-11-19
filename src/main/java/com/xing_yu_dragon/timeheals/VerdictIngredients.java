@@ -49,6 +49,21 @@ public final class VerdictIngredients {
     private VerdictIngredients() {
     }
 
+    /** 给 JEI 展示用的物品加说明行（不影响实际匹配）。 */
+    private static ItemStack withLore(ItemStack stack, String... lines) {
+        if (stack.isEmpty()) {
+            return stack;
+        }
+        java.util.List<net.minecraft.network.chat.Component> lore = new java.util.ArrayList<>();
+        for (String line : lines) {
+            lore.add(net.minecraft.network.chat.Component.literal(line)
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+        }
+        stack.set(net.minecraft.core.component.DataComponents.LORE,
+                new net.minecraft.world.item.component.ItemLore(lore));
+        return stack;
+    }
+
     /** 满耐久的时间之剑；或「无法破坏 + 打了 verdict_mark 标记」的时间之剑。 */
     public record FullSwordIngredient() implements ICustomIngredient {
 
@@ -73,7 +88,13 @@ public final class VerdictIngredients {
         @Override
         public Stream<ItemStack> getItems() {
             Item item = BuiltInRegistries.ITEM.get(TIME_SWORD);
-            return item == Items.AIR ? Stream.empty() : Stream.of(new ItemStack(item));
+            if (item == Items.AIR) {
+                return Stream.empty();
+            }
+            ItemStack display = new ItemStack(item);
+            return Stream.of(withLore(display,
+                    "需要：满耐久",
+                    "或：带有「不可破坏」属性"));
         }
 
         @Override
@@ -125,7 +146,12 @@ public final class VerdictIngredients {
         public Stream<ItemStack> getItems() {
             ResourceLocation id = ResourceLocation.tryParse(item);
             Item found = id == null ? Items.AIR : BuiltInRegistries.ITEM.get(id);
-            return found == Items.AIR ? Stream.empty() : Stream.of(new ItemStack(found));
+            if (found == Items.AIR) {
+                return Stream.empty();
+            }
+            ItemStack display = new ItemStack(found);
+            String need = String.format("需要：充能 ≥ %.1f M OP", minEnergy / 1_000_000.0D);
+            return Stream.of(withLore(display, need, "（物品本身需带能量）"));
         }
 
         @Override
