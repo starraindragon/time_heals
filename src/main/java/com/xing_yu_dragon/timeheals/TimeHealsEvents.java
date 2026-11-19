@@ -121,9 +121,8 @@ public final class TimeHealsEvents {
                             }
                             stack.set(net.minecraft.core.component.DataComponents.UNBREAKABLE,
                                     new net.minecraft.world.item.component.Unbreakable(true));
-                            stack.set(TimeHealsComponents.VERDICT_MARK.get(), true);
                             context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
-                                    .literal("已标记为不可破坏 + 裁决器专用"), false);
+                                    .literal("已设为不可破坏"), false);
                             return 1;
                         })));
     }

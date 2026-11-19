@@ -40,9 +40,7 @@ public class VerdictDeviceItemDE extends BlockItem implements IFusionDataTransfe
             if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(TIME_SWORD)) {
                 continue;
             }
-            boolean unbreakable = stack.has(DataComponents.UNBREAKABLE);
-            boolean marked = stack.getOrDefault(TimeHealsComponents.VERDICT_MARK.get(), false);
-            if (unbreakable && marked) {
+            if (stack.has(DataComponents.UNBREAKABLE)) {
                 result.set(TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), true);
                 return;
             }

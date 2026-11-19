@@ -66,12 +66,8 @@ public final class VerdictIngredients {
                 return false;
             }
             int damage = stack.getOrDefault(DataComponents.DAMAGE, 0);
-            if (damage == 0) {
-                return true;
-            }
-            boolean unbreakable = stack.has(DataComponents.UNBREAKABLE);
-            boolean marked = stack.getOrDefault(TimeHealsComponents.VERDICT_MARK.get(), false);
-            return unbreakable && marked;
+            // 满耐久，或带「不可破坏」组件即可
+            return damage == 0 || stack.has(DataComponents.UNBREAKABLE);
         }
 
         @Override

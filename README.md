@@ -117,7 +117,7 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
 - **按模组附加**：装了数据能源学追加「时间核心 ×4 + 极限承载接口 ×2」，装了 Powah 追加「下界电容 ×2」；
 - 四套组合配方互斥（`mod_loaded` / `not(mod_loaded)` / `item_exists` 条件），任意环境只有一套生效。
 - 特殊材料用自定义材料类型匹配：
-  - `time_heals:full_sword` —— 时间之剑且 `damage == 0`，或「无法破坏 + `time_heals:verdict_mark` 标记」；
+  - `time_heals:full_sword` —— 时间之剑且 `damage == 0`（满耐久）或带「不可破坏」组件；
   - `time_heals:charged_capacitor` —— 指定物品且 OP 能量 ≥ `minEnergy`（用 Brandon's Core 的能量读取）。
 
 **模型**：读取 `assets/time_heals/models/block/verdict_device_parts.json`
