@@ -20,5 +20,6 @@
   "message.time_heals.need_time_crystal": "Hold Time Crystals to activate",
   "message.time_heals.need_full_stack": "A full stack of Time Crystals (64) is required",
   "block.time_heals.verdict_remains": "Verdict Device Remains",
-  "item.time_heals.damage_draconic_staff": "Broken Draconic Staff"
+  "item.time_heals.damage_draconic_staff": "Broken Draconic Staff",
+  "itemGroup.time_heals": "Time Heals"
 }

@@ -45,6 +45,9 @@ public class TimeHeals {
             DeferredRegister.createItems(MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    /** 本模组的创造模式物品栏。 */
+    public static final DeferredRegister<net.minecraft.world.item.CreativeModeTab> CREATIVE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     /** 时序裁决器：3×3 造型、中央水晶自旋 + 上下浮动。 */
     public static final DeferredBlock<VerdictDeviceBlock> VERDICT_DEVICE =
@@ -109,6 +112,7 @@ public class TimeHeals {
         BLOCK_ENTITIES.register(modEventBus);
         TimeHealsComponents.COMPONENTS.register(modEventBus);
         VerdictIngredients.TYPES.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
 
         // 客户端：尽早注册指南（必须早于资源重载的 prepare 阶段）
         if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
@@ -118,18 +122,15 @@ public class TimeHeals {
         LOGGER.info("[time_heals] 前置已加载：时间系列武器白名单 + 时间混乱效果 + 时序裁决器");
     }
 
-    /** 把机器放进创造模式「功能方块」页，方便搜索与取用。 */
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
-    public static final class CreativeTabHandler {
-        private CreativeTabHandler() {
-        }
-
-        @net.neoforged.bus.api.SubscribeEvent
-        public static void onBuildTab(BuildCreativeModeTabContentsEvent event) {
-            if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-                event.accept(VERDICT_DEVICE_ITEM);
-                event.accept(DAMAGE_DRACONIC_STAFF);
-            }
-        }
-    }
+    /** 本模组的创造模式标签页：只放 time_heals 自己注册的物品。 */
+    public static final net.neoforged.neoforge.registries.DeferredHolder<
+            net.minecraft.world.item.CreativeModeTab, net.minecraft.world.item.CreativeModeTab> TAB =
+            CREATIVE_TABS.register("time_heals", () -> net.minecraft.world.item.CreativeModeTab.builder()
+                    .title(net.minecraft.network.chat.Component.translatable("itemGroup.time_heals"))
+                    .icon(() -> new net.minecraft.world.item.ItemStack(VERDICT_DEVICE_ITEM.get()))
+                    .displayItems((params, output) -> {
+                        output.accept(VERDICT_DEVICE_ITEM.get());
+                        output.accept(DAMAGE_DRACONIC_STAFF.get());
+                    })
+                    .build());
 }
