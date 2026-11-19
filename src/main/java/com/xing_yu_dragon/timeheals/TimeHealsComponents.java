@@ -32,6 +32,13 @@ public final class TimeHealsComponents {
                     .networkSynchronized(ByteBufCodecs.BOOL)
                     .build());
 
+    /** 裁决器自毁时返还的那把「只剩 1 点耐久」的时间之剑。 */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> VERDICT_WORN_SWORD =
+            COMPONENTS.register("verdict_worn_sword", () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build());
+
     private TimeHealsComponents() {
     }
 }

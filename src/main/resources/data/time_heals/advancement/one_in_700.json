@@ -1,0 +1,18 @@
+{
+  "parent": "time_heals:godslayer",
+  "display": {
+    "icon": { "id": "kubejs:time_sword" },
+    "title": { "translate": "advancements.time_heals.one_in_700.title" },
+    "description": { "translate": "advancements.time_heals.one_in_700.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "time_heals:event",
+      "conditions": { "name": "one_in_700" }
+    }
+  }
+}

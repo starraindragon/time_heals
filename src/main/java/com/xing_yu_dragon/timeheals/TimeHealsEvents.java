@@ -127,6 +127,17 @@ public final class TimeHealsEvents {
                         })));
     }
 
+    /** 拾取裁决器返还的 1 耐久之剑 → 成就。 */
+    @SubscribeEvent
+    public static void onPickupWornSword(
+            net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent.Post event) {
+        var stack = event.getOriginalStack();
+        if (!stack.isEmpty() && stack.getOrDefault(
+                TimeHealsComponents.VERDICT_WORN_SWORD.get(), false)) {
+            TimeAdvancements.event(event.getPlayer(), "one_in_700");
+        }
+    }
+
     /** 调试：/timeheals backlash [self] —— 在脚下触发一次时序反噬。 */
     @SubscribeEvent
     public static void onRegisterBacklashCommand(RegisterCommandsEvent event) {

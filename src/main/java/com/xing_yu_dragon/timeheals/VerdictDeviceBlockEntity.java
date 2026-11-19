@@ -317,6 +317,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             return;
         }
         net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(sword);
+        stack.set(TimeHealsComponents.VERDICT_WORN_SWORD.get(), true);
         int maxDamage = stack.getMaxDamage();
         if (maxDamage > 0) {
             stack.set(net.minecraft.core.component.DataComponents.DAMAGE, Math.max(0, maxDamage - 1));
