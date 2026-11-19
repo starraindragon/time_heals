@@ -32,6 +32,12 @@ public class VerdictDeviceItemDE extends BlockItem implements IFusionDataTransfe
     @Override
     public void transferIngredientData(ItemStack result, IFusionInventory fusionInventory,
                                        HolderLookup.Provider provider) {
+        // 优先使用 startCraft 时抓到的快照（此刻注入器可能已被清空）
+        if (com.xing_yu_dragon.timeheals.compat.FusionCapture.consumePending()) {
+            result.set(TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), true);
+            com.xing_yu_dragon.timeheals.TimeHeals.LOGGER.info("[debug] 使用快照标记产物为不可破坏之剑合成");
+            return;
+        }
         var injectors = fusionInventory.getInjectors();
         com.xing_yu_dragon.timeheals.TimeHeals.LOGGER.info(
                 "[debug] 融合产物数据转移: 注入器数量={}", injectors.size());

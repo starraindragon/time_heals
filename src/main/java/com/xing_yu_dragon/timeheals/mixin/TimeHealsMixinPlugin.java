@@ -37,6 +37,11 @@ public final class TimeHealsMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".FusionCraftCaptureMixin")) {
+            boolean apply = isModLoaded("draconicevolution");
+            LOGGER.info("[Mixin门禁] FusionCraftCaptureMixin 应用={}", apply);
+            return apply;
+        }
         if (mixinClassName.endsWith(".ChaosWeaponDamageMixin")) {
             boolean apply = isModLoaded("draconicevolution");
             LOGGER.info("[Mixin门禁] ChaosWeaponDamageMixin 应用={} (draconicevolution {})",

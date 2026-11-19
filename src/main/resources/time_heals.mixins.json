@@ -10,7 +10,8 @@
     "WitherChaosEffectMixin",
     "WitherBossBarAccess",
     "EnderDragonChaosEffectMixin",
-    "EndDragonFightBarAccess"
+    "EndDragonFightBarAccess",
+    "FusionCraftCaptureMixin"
   ],
   "injectors": {
     "defaultRequire": 1
