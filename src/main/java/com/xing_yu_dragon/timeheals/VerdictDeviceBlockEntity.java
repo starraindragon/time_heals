@@ -253,6 +253,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
 
             if (newPhase != phase) {
                 phase = newPhase;
+                if (newPhase == PHASE_CHARGE && crystalsBroken >= RING_LAYERS
+                        && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                    // 14 颗混沌水晶全部被时间法则切断 → 成就
+                    TimeAdvancements.eventNearby(serverLevel, worldPosition, 32.0D, "fourteen_strikes");
+                }
                 onPhaseEnter(newPhase);
                 setChanged();
                 sync();
@@ -396,7 +401,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         living.invulnerableTime = 0;
         // 混沌守卫：护盾 16000 + 本体 1000（DE 默认值），
         // 伤害必须一次性超过「护盾 + 本体」才能连盾带血一起打掉。
-        float amount = Math.max(50000.0F, living.getMaxHealth() * 50.0F);
+        float amount = Math.max(53000.0F, living.getMaxHealth() * 50.0F);
         boolean damaged = living.hurt(source, amount);
 
         // 护盾已破（附近没有存活的水晶）时，补上处决，保证仪式能真正终结守卫

@@ -1,9 +1,15 @@
 {
   "parent": "time_heals:bankruptcy",
   "display": {
-    "icon": { "id": "kubejs:time_sword" },
-    "title": { "translate": "advancements.time_heals.godslayer.title" },
-    "description": { "translate": "advancements.time_heals.godslayer.description" },
+    "icon": {
+      "id": "draconicevolution:draconic_staff"
+    },
+    "title": {
+      "translate": "advancements.time_heals.godslayer.title"
+    },
+    "description": {
+      "translate": "advancements.time_heals.godslayer.description"
+    },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,
@@ -12,7 +18,9 @@
   "criteria": {
     "unlock": {
       "trigger": "time_heals:event",
-      "conditions": { "name": "godslayer" }
+      "conditions": {
+        "name": "godslayer"
+      }
     }
   }
 }

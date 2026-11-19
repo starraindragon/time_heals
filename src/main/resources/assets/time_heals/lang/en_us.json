@@ -27,12 +27,14 @@
   "advancements.time_heals.bankruptcy.description": "Looking at that pile of Draconic materials and two bows in the fusion core, are you sure you still want to press it?",
   "advancements.time_heals.mutual_destruction.title": "Mutual Destruction",
   "advancements.time_heals.mutual_destruction.description": "You won the fight, but your own machine took you with it. The Chaos Dragon sends its congratulations from the void.",
-  "advancements.time_heals.godslayer.title": "Mortal Iron Slays a God",
-  "advancements.time_heals.godslayer.description": "A sword with iron-tier stats dealt 50000 chaotic damage. Time Sword: worth it.",
+  "advancements.time_heals.godslayer.title": "End of an Artifact",
+  "advancements.time_heals.godslayer.description": "The Time Sword severed causality, and the Draconic Staff you sacrificed dealt the world-ending 53000 chaotic damage.",
   "advancements.time_heals.who_is_crying.title": "Who Is Crying?",
   "advancements.time_heals.who_is_crying.description": "The machine vanished, leaving only a block of obsidian. Why is it crying? Because you just sent a Draconic Staff into the incinerator.",
   "advancements.time_heals.recycling.title": "Recycling Scrap",
   "advancements.time_heals.recycling.description": "Even a Draconic relic, worn down by time, can only be recycled as scrap.",
   "advancements.time_heals.one_in_700.title": "1/700",
-  "advancements.time_heals.one_in_700.description": "It survived the temporal torrent, yet now it cannot even cut a blade of grass. Suggestion: enshrine it."
+  "advancements.time_heals.one_in_700.description": "It survived the temporal torrent, yet now it cannot even cut a blade of grass. Suggestion: enshrine it.",
+  "advancements.time_heals.fourteen_strikes.title": "Fourteen Precise Strikes",
+  "advancements.time_heals.fourteen_strikes.description": "Iron on the tooltip, divine in the laws. It spent 14 of its 700 durability to cut off the Chaotic Crystals, doing what vanilla players need exploits to achieve."
 }
