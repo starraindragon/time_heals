@@ -1,0 +1,18 @@
+{
+  "parent": "time_heals:who_is_crying",
+  "display": {
+    "icon": { "id": "minecraft:brush" },
+    "title": { "translate": "advancements.time_heals.recycling.title" },
+    "description": { "translate": "advancements.time_heals.recycling.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "time_heals:event",
+      "conditions": { "name": "recycling" }
+    }
+  }
+}

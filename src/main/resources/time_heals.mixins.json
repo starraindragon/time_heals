@@ -12,7 +12,8 @@
     "EnderDragonChaosEffectMixin",
     "EndDragonFightBarAccess",
     "FusionCraftCaptureMixin",
-    "BrushableBlockTypeMixin"
+    "BrushableBlockTypeMixin",
+    "BrushableRemainsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
