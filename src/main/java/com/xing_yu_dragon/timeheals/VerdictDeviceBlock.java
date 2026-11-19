@@ -122,6 +122,18 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
     }
 
     @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            net.minecraft.world.entity.LivingEntity placer,
+                            net.minecraft.world.item.ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device) {
+            boolean usedUnbreakable = stack.getOrDefault(
+                    TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), false);
+            device.setUsedUnbreakableSword(usedUnbreakable);
+        }
+    }
+
+    @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
         if (level.isClientSide()) {

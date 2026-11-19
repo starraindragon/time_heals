@@ -66,8 +66,14 @@ public class TimeHeals {
                             .noLootTable()));
 
     public static final DeferredItem<BlockItem> VERDICT_DEVICE_ITEM =
-            ITEMS.register("verdict_device",
-                    () -> new BlockItem(VERDICT_DEVICE.get(), new Item.Properties()));
+            ITEMS.register("verdict_device", () -> {
+                if (net.neoforged.fml.ModList.get().isLoaded("draconicevolution")) {
+                    // 装了龙研：换成能接收融合合成数据的版本
+                    return new com.xing_yu_dragon.timeheals.compat.VerdictDeviceItemDE(
+                            VERDICT_DEVICE.get(), new Item.Properties());
+                }
+                return new VerdictDeviceItem(VERDICT_DEVICE.get(), new Item.Properties());
+            });
 
     public static final net.neoforged.neoforge.registries.DeferredHolder<BlockEntityType<?>,
             BlockEntityType<VerdictDeviceBlockEntity>> VERDICT_DEVICE_BE =

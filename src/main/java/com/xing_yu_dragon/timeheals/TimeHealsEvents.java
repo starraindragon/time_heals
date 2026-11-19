@@ -107,6 +107,27 @@ public final class TimeHealsEvents {
         }
     }
 
+    /** 命令：/timeheals mark —— 把手持物品标记为「不可破坏 + 裁决器专用」。 */
+    @SubscribeEvent
+    public static void onRegisterTimeHealsCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("timeheals")
+                .then(net.minecraft.commands.Commands.literal("mark")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            var stack = player.getMainHandItem();
+                            if (stack.isEmpty()) {
+                                return 0;
+                            }
+                            stack.set(net.minecraft.core.component.DataComponents.UNBREAKABLE,
+                                    new net.minecraft.world.item.component.Unbreakable(true));
+                            stack.set(TimeHealsComponents.VERDICT_MARK.get(), true);
+                            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
+                                    .literal("已标记为不可破坏 + 裁决器专用"), false);
+                            return 1;
+                        })));
+    }
+
     /** 调试命令：/timeaccel —— 给视线 10 格内的方块施加时间加速。 */
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {

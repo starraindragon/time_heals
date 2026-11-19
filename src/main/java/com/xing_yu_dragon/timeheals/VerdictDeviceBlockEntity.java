@@ -76,6 +76,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     private int elapsedTicks = 0;
     /** 是否已经打印过连接目标（避免刷屏）。 */
     private boolean loggedLinkTarget = false;
+    /** 合成时是否使用了「无法破坏 + 已标记」的时间之剑。 */
+    private boolean usedUnbreakableSword = false;
     /** 剩余演示 tick；>0 表示仪式进行中。 */
     private int remainingTicks = 0;
     /** 结束后恢复待机的倒计时。 */
@@ -109,6 +111,15 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
 
     public float getProgress() {
         return progress;
+    }
+
+    public boolean isUsedUnbreakableSword() {
+        return usedUnbreakableSword;
+    }
+
+    public void setUsedUnbreakableSword(boolean used) {
+        this.usedUnbreakableSword = used;
+        setChanged();
     }
 
     public int getCrystalRings() {
@@ -280,7 +291,29 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         playAt(TimeSounds.VERDICT_DONE.get(), 2.0F, 0.7F);
         server.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN
                 .defaultBlockState());
+        if (usedUnbreakableSword) {
+            spawnWornSword(server, pos);
+        }
         TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已在 {} 自毁为哭泣的黑曜石", pos);
+    }
+
+    /** 在哭泣的黑曜石上方生成一把只剩 1 点耐久的时间之剑。 */
+    private void spawnWornSword(net.minecraft.server.level.ServerLevel server, BlockPos pos) {
+        net.minecraft.world.item.Item sword = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("kubejs", "time_sword"));
+        if (sword == net.minecraft.world.item.Items.AIR) {
+            return;
+        }
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(sword);
+        int maxDamage = stack.getMaxDamage();
+        if (maxDamage > 0) {
+            stack.set(net.minecraft.core.component.DataComponents.DAMAGE, Math.max(0, maxDamage - 1));
+        }
+        net.minecraft.world.entity.item.ItemEntity entity = new net.minecraft.world.entity.item.ItemEntity(
+                server, pos.getX() + 0.5D, pos.getY() + 1.2D, pos.getZ() + 0.5D, stack);
+        entity.setDefaultPickUpDelay();
+        server.addFreshEntity(entity);
+        TimeHeals.LOGGER.info("[时间混乱] 裁决器返还了一把 1 耐久的时间之剑");
     }
 
     private void sync() {
@@ -608,6 +641,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         tag.putInt("crystals", crystalsBroken);
         tag.putFloat("progress", progress);
         tag.putInt("rings", crystalRings);
+        tag.putBoolean("unbreakableSword", usedUnbreakableSword);
         tag.putInt("remaining", remainingTicks);
         tag.putInt("reset", resetTicks);
     }
@@ -619,6 +653,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         crystalsBroken = tag.getInt("crystals");
         progress = tag.getFloat("progress");
         crystalRings = tag.getInt("rings");
+        usedUnbreakableSword = tag.getBoolean("unbreakableSword");
         hasAim = tag.getBoolean("hasAim");
         aimX = tag.getFloat("aimX");
         aimY = tag.getFloat("aimY");
@@ -632,9 +667,11 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("progress", progress);
         tag.putInt("rings", crystalRings);
+        tag.putBoolean("unbreakableSword", usedUnbreakableSword);
         tag.putInt("phase", phase);
         tag.putInt("crystals", crystalsBroken);
         tag.putInt("rings", crystalRings);
+        tag.putBoolean("unbreakableSword", usedUnbreakableSword);
         tag.putBoolean("hasAim", hasAim);
         tag.putFloat("aimX", aimX);
         tag.putFloat("aimY", aimY);

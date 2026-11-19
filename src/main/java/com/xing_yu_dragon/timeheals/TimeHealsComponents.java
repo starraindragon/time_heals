@@ -25,6 +25,13 @@ public final class TimeHealsComponents {
                     .networkSynchronized(ByteBufCodecs.BOOL)
                     .build());
 
+    /** 合成这台机器时用的是「无法破坏 + 已标记」的时间之剑。 */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> USED_UNBREAKABLE_SWORD =
+            COMPONENTS.register("used_unbreakable_sword", () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build());
+
     private TimeHealsComponents() {
     }
 }
