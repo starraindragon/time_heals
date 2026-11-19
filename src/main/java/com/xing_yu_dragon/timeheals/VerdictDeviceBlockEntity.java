@@ -303,7 +303,7 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         if (server.random.nextFloat() >= 0.01F) {
             return;
         }
-        TemporalBacklash.trigger(server, pos, true, null);
+        TemporalBacklash.trigger(server, pos, true, null, "mutual_destruction");
         playAt(TimeSounds.CRYSTAL_EXPLODE.get(), 3.0F, 0.5F);
     }
 

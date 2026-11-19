@@ -38,6 +38,14 @@ public final class TemporalBacklash {
      */
     public static int trigger(ServerLevel level, BlockPos pos, boolean includeSource,
                               Player sourcePlayer) {
+        return trigger(level, pos, includeSource, sourcePlayer, null);
+    }
+
+    /**
+     * @param deathEvent 玩家被反噬打死时触发的成就事件名，可为 null
+     */
+    public static int trigger(ServerLevel level, BlockPos pos, boolean includeSource,
+                              Player sourcePlayer, String deathEvent) {
         AABB area = new AABB(pos).inflate(RADIUS);
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
         if (!includeSource && sourcePlayer != null) {
@@ -53,6 +61,9 @@ public final class TemporalBacklash {
         for (Player player : players) {
             player.invulnerableTime = 0;
             player.hurt(source, DAMAGE);
+            if (deathEvent != null && player.isDeadOrDying()) {
+                TimeAdvancements.event(player, deathEvent);
+            }
         }
         for (int i = 0; i < 40; i++) {
             double dx = (level.random.nextDouble() - 0.5D) * 8.0D;

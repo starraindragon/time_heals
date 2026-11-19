@@ -1,0 +1,18 @@
+{
+  "parent": "time_heals:bankruptcy",
+  "display": {
+    "icon": { "id": "minecraft:tnt" },
+    "title": { "translate": "advancements.time_heals.mutual_destruction.title" },
+    "description": { "translate": "advancements.time_heals.mutual_destruction.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "time_heals:event",
+      "conditions": { "name": "mutual_destruction" }
+    }
+  }
+}
