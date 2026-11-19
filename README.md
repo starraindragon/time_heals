@@ -186,6 +186,9 @@ accelerationDisplayRange = 5.0
 runtimeOnly fileTree('devmods') { include '*.jar' }
 ```
 
+当前 `devmods/` 里挂的是：龙之进化 + BrandonsCore + CodeChickenLib、KubeJS + Rhino + Architectury、
+GuideME、Jade、**JEI**（用于检查融合合成配方）。
+
 `devmods/` 仅用于本地调试，不参与发布产物，已在 `.gitignore` 中排除。
 
 ## 多人游戏
