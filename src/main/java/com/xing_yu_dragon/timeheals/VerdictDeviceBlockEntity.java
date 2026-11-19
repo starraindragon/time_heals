@@ -290,6 +290,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 40, 1.0D, 1.0D, 1.0D, 0.1D);
         playAt(TimeSounds.VERDICT_DONE.get(), 2.0F, 0.7F);
         server.setBlockAndUpdate(pos, TimeHeals.VERDICT_REMAINS.get().defaultBlockState());
+        // 10 格内目睹机器化灰的玩家获得成就
+        TimeAdvancements.eventNearby(server, pos, 10.0D, "who_is_crying");
         if (usedUnbreakableSword) {
             spawnWornSword(server, pos);
         }

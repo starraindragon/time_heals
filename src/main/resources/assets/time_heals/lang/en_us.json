@@ -28,5 +28,7 @@
   "advancements.time_heals.mutual_destruction.title": "Mutual Destruction",
   "advancements.time_heals.mutual_destruction.description": "You won the fight, but your own machine took you with it. The Chaos Dragon sends its congratulations from the void.",
   "advancements.time_heals.godslayer.title": "Mortal Iron Slays a God",
-  "advancements.time_heals.godslayer.description": "A sword with iron-tier stats dealt 50000 chaotic damage. Time Sword: worth it."
+  "advancements.time_heals.godslayer.description": "A sword with iron-tier stats dealt 50000 chaotic damage. Time Sword: worth it.",
+  "advancements.time_heals.who_is_crying.title": "Who Is Crying?",
+  "advancements.time_heals.who_is_crying.description": "The machine vanished, leaving only a block of obsidian. Why is it crying? Because you just sent a Draconic Staff into the incinerator."
 }

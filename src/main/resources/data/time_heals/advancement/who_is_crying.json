@@ -1,0 +1,18 @@
+{
+  "parent": "time_heals:godslayer",
+  "display": {
+    "icon": { "id": "minecraft:crying_obsidian" },
+    "title": { "translate": "advancements.time_heals.who_is_crying.title" },
+    "description": { "translate": "advancements.time_heals.who_is_crying.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "time_heals:event",
+      "conditions": { "name": "who_is_crying" }
+    }
+  }
+}
