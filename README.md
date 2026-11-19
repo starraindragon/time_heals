@@ -112,7 +112,7 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
 
 - 类型：龙之进化 **融合合成**（`draconicevolution:fusion_crafting`，`techLevel: draconic`）；
 - 催化剂：神龙之力权杖 `draconicevolution:draconic_staff`；
-- 基础材料：时间水晶块 ×4、神龙电容 ×2、神龙弓 ×2、神龙能量核心 ×2、满耐久时间之剑 ×1、充能神龙通量容器 ×1（≥ 320.0 MOP）；
+- 基础材料：时间水晶块 ×4、充能神龙通量容器 ×2（各 ≥ 320.0 MOP）、神龙弓 ×2、神龙能量核心 ×2、满耐久/不可破坏的时间之剑 ×1；
 - 能量：256,000,000；
 - **按模组附加**：装了数据能源学追加「时间核心 ×4 + 极限承载接口 ×2」，装了 Powah 追加「下界电容 ×2」；
 - 四套组合配方互斥（`mod_loaded` / `not(mod_loaded)` / `item_exists` 条件），任意环境只有一套生效。
