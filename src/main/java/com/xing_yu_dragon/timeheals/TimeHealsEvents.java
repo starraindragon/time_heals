@@ -137,8 +137,9 @@ public final class TimeHealsEvents {
                             var player = context.getSource().getPlayerOrException();
                             int given = 0;
 
-                            // 机器
+                            // 机器：预先带上「用不可破坏之剑合成」的标记，直接可测返还逻辑
                             var device = new net.minecraft.world.item.ItemStack(TimeHeals.VERDICT_DEVICE_ITEM.get());
+                            device.set(TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), true);
                             if (!player.getInventory().add(device)) {
                                 player.drop(device, false);
                             }
@@ -170,7 +171,7 @@ public final class TimeHealsEvents {
 
                             int total = given;
                             context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
-                                    .literal("已发放测试物品：" + total + " 类"), false);
+                                    .literal("已发放测试物品：" + total + " 类（裁决器已标记为不可破坏之剑合成）"), false);
                             return given;
                         })));
     }
