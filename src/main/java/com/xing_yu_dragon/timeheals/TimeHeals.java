@@ -112,6 +112,7 @@ public class TimeHeals {
         TimeHealsComponents.COMPONENTS.register(modEventBus);
         VerdictIngredients.TYPES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
+        TimeTriggers.TRIGGERS.register(modEventBus);
 
         // 客户端：尽早注册指南（必须早于资源重载的 prepare 阶段）
         if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {

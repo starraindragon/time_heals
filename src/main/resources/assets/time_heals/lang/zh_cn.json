@@ -23,5 +23,15 @@
   "block.time_heals.verdict_remains": "裁决器残骸",
   "item.time_heals.damage_draconic_staff": "报废的神龙权杖",
   "itemGroup.time_heals": "时间工程",
-  "death.attack.temporal_backlash": "您在时序反噬造成的爆炸中迷失"
+  "death.attack.temporal_backlash": "您在时序反噬造成的爆炸中迷失",
+  "advancements.time_heals.root.title": "时间工程",
+  "advancements.time_heals.root.description": "获得第一颗时间水晶",
+  "advancements.time_heals.verdict_device.title": "时序裁决器",
+  "advancements.time_heals.verdict_device.description": "获得一台时序裁决器",
+  "advancements.time_heals.ritual.title": "裁决执行",
+  "advancements.time_heals.ritual.description": "让时序裁决器完成一次完整仪式",
+  "advancements.time_heals.broken_staff.title": "残骸考古",
+  "advancements.time_heals.broken_staff.description": "从裁决器残骸中刷出报废的神龙权杖",
+  "advancements.time_heals.backlash.title": "时序反噬",
+  "advancements.time_heals.backlash.description": "你在时序反噬造成的爆炸中迷失"
 }
