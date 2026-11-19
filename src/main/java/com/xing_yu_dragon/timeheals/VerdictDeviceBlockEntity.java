@@ -293,8 +293,6 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         if (usedUnbreakableSword) {
             spawnWornSword(server, pos);
         }
-        // 仪式完成成就（16 格内所有玩家）
-        TimeAdvancements.eventNearby(server, pos, 16.0D, "ritual");
         // 1% 时序反噬：5 格内所有玩家承受混沌级伤害
         triggerTemporalBacklash(server, pos);
         TimeHeals.LOGGER.info("[时间混乱] 时序裁决器已在 {} 自毁为哭泣的黑曜石", pos);

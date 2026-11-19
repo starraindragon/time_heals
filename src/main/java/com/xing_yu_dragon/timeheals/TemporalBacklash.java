@@ -53,9 +53,6 @@ public final class TemporalBacklash {
         for (Player player : players) {
             player.invulnerableTime = 0;
             player.hurt(source, DAMAGE);
-            if (player.isDeadOrDying()) {
-                TimeAdvancements.event(player, "backlash");
-            }
         }
         for (int i = 0; i < 40; i++) {
             double dx = (level.random.nextDouble() - 0.5D) * 8.0D;

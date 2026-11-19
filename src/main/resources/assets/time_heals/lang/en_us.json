@@ -22,15 +22,5 @@
   "block.time_heals.verdict_remains": "Verdict Device Remains",
   "item.time_heals.damage_draconic_staff": "Broken Draconic Staff",
   "itemGroup.time_heals": "Time Heals",
-  "death.attack.temporal_backlash": "You were lost in the explosion caused by Temporal Backlash",
-  "advancements.time_heals.root.title": "Time Engineering",
-  "advancements.time_heals.root.description": "Obtain your first Time Crystal",
-  "advancements.time_heals.verdict_device.title": "Temporal Verdict Device",
-  "advancements.time_heals.verdict_device.description": "Obtain a Temporal Verdict Device",
-  "advancements.time_heals.ritual.title": "Verdict Executed",
-  "advancements.time_heals.ritual.description": "Complete a full ritual with the Verdict Device",
-  "advancements.time_heals.broken_staff.title": "Relic Excavation",
-  "advancements.time_heals.broken_staff.description": "Brush a Broken Draconic Staff out of the remains",
-  "advancements.time_heals.backlash.title": "Temporal Backlash",
-  "advancements.time_heals.backlash.description": "You were lost in the explosion caused by Temporal Backlash"
+  "death.attack.temporal_backlash": "You were lost in the explosion caused by Temporal Backlash"
 }
