@@ -35,9 +35,6 @@ public final class FusionCapture {
                     continue;
                 }
                 boolean unbreakable = stack.has(DataComponents.UNBREAKABLE);
-                int damage = stack.getOrDefault(DataComponents.DAMAGE, 0);
-                TimeHeals.LOGGER.info("[debug] 合成前注入器: {} 不可破坏={} damage={}",
-                        BuiltInRegistries.ITEM.getKey(stack.getItem()), unbreakable, damage);
                 if (BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(TIME_SWORD) && unbreakable) {
                     found = true;
                 }
@@ -46,7 +43,6 @@ public final class FusionCapture {
             TimeHeals.LOGGER.warn("[time_heals] 融合注入器快照失败: {}", t.toString());
         }
         pendingUnbreakableSword = found;
-        TimeHeals.LOGGER.info("[debug] 融合合成开始，记录不可破坏之剑={}", found);
     }
 
     /** 取走并清空本次合成的记录。 */

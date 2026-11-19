@@ -129,7 +129,6 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device) {
             boolean usedUnbreakable = stack.getOrDefault(
                     TimeHealsComponents.USED_UNBREAKABLE_SWORD.get(), false);
-            TimeHeals.LOGGER.info("[debug] 放置裁决器: 不可破坏之剑标记={}", usedUnbreakable);
             device.setUsedUnbreakableSword(usedUnbreakable);
         }
     }
