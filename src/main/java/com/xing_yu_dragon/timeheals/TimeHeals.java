@@ -77,12 +77,6 @@ public class TimeHeals {
                             .sound(SoundType.STONE)
                             .noLootTable()));
 
-    public static final net.neoforged.neoforge.registries.DeferredHolder<BlockEntityType<?>,
-            BlockEntityType<VerdictRemainsBlockEntity>> VERDICT_REMAINS_BE =
-            BLOCK_ENTITIES.register("verdict_remains",
-                    () -> BlockEntityType.Builder.of(VerdictRemainsBlockEntity::new,
-                            VERDICT_REMAINS.get()).build(null));
-
     /** 残骸方块的物品形式（仅用于创造栏摆放）。 */
     public static final DeferredItem<BlockItem> VERDICT_REMAINS_ITEM =
             ITEMS.register("verdict_remains",
