@@ -55,6 +55,32 @@
     {
       "consume": true,
       "ingredient": {
+        "type": "time_heals:full_sword"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "type": "time_heals:charged_capacitor",
+        "item": "draconicevolution:draconic_capacitor",
+        "minEnergy": 320000000
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_energy_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
+        "item": "draconicevolution:draconic_energy_core"
+      }
+    },
+    {
+      "consume": true,
+      "ingredient": {
         "item": "data_energistics:time_core"
       }
     },
@@ -125,6 +151,26 @@
       "item": "kubejs:time_crystal_block"
     },
     {
+      "type": "neoforge:item_exists",
+      "item": "kubejs:time_sword"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "draconicevolution:draconic_capacitor"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "draconicevolution:draconic_energy_core"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "powah"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "powah:capacitor_nitro"
+    },
+    {
       "type": "neoforge:mod_loaded",
       "modid": "data_energistics"
     },
@@ -135,14 +181,6 @@
     {
       "type": "neoforge:item_exists",
       "item": "data_energistics:data_sanctum_interface"
-    },
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "powah"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "powah:capacitor_nitro"
     }
   ]
 }

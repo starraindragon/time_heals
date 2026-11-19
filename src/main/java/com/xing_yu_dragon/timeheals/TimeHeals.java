@@ -81,6 +81,8 @@ public class TimeHeals {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
+        TimeHealsComponents.COMPONENTS.register(modEventBus);
+        VerdictIngredients.TYPES.register(modEventBus);
 
         // 客户端：尽早注册指南（必须早于资源重载的 prepare 阶段）
         if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
