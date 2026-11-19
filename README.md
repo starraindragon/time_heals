@@ -24,6 +24,7 @@ and an in-game GuideME guide.
 | --- | --- | --- |
 | `draconicevolution` | 可选 | 混沌级伤害判定（Mixin 到 `DEDamage#getDamageLevel`）；时序裁决器的目标与伤害类型 |
 | `guideme` | 可选 | 内置说明文档 |
+| `jade` | 可选 | 仪式期间在 HUD 上显示「仪式进行中，无法破坏」 |
 | `kubejs` | 不在编译期依赖 | 提供被强化的时间系列物品 |
 
 缺少可选依赖时模组仍能正常加载，只是对应功能不启用。
@@ -99,10 +100,11 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
 | 破晶 | 35 秒 | 四柱用光点串连接混沌水晶，连 2 秒后爆炸并摧毁水晶；每破一颗亮一层环，共 14 层 |
 | 蓄能 | 5 秒 | 四柱顶端向中央水晶汇聚能量束 |
 | 锁定 | 5 秒 | 中央水晶向守卫发射追踪光束（岛上 256 格内可锁定） |
-| 攻击 | 5 tick | 尖啸音波命中，造成 50000 混沌级伤害（连 16000 护盾 + 1000 本体一起打掉） |
+| 攻击 | 5 tick | 尖啸音波命中，造成 53000 混沌级伤害（连 16000 护盾 + 1000 本体一起打掉） |
 | 收尾 | 2 秒 | 进度满格后自毁为**哭泣的黑曜石** |
 
 **表现细节**：
+- **仪式期间机器免疫挖掘与爆炸**，Jade 提示会显示「仪式进行中，无法破坏」；
 - 底盘进度槽按阶段推进，颜色由绿渐变到红；
 - 柱子上的 14 层环会一直保留到仪式结束；
 - 伤害类型使用 `draconicevolution:chaos_implosion`（DE 的 chaotic 标签），忽略护盾；
@@ -120,11 +122,45 @@ private static void time_heals$chaoticWeaponWhitelist(...) { ... }
   - `time_heals:full_sword` —— 时间之剑且 `damage == 0`（满耐久）或带「不可破坏」组件；
   - `time_heals:charged_capacitor` —— 指定物品且 OP 能量 ≥ `minEnergy`（用 Brandon's Core 的能量读取）。
 
+**自毁产物**：原地变成本模组的**裁决器残骸**（`time_heals:verdict_remains`，外观是哭泣的黑曜石）。
+用刷子刷约 10 次会掉出**报废的神龙权杖**（`time_heals:damage_draconic_staff`），随后方块变回普通哭泣的黑曜石。
+
+**时序反噬**：自毁时有 **1%** 概率触发，对 5 格内所有玩家造成 53000 点 `time_heals:temporal_backlash` 伤害，
+死亡信息为「您在时序反噬造成的爆炸中迷失」。
+
+**成就**：模组自带一套进度树，见下方「成就」小节。
+
 **模型**：读取 `assets/time_heals/models/block/verdict_device_parts.json`
 （Blockbench 导出的 Java 方块模型格式），替换该 JSON 与贴图即可换模型，无需改 Java。
 中央水晶按 15°/秒自旋、上下浮动总行程 1 格。
 
-### 6. 内置指南
+### 6. 成就
+
+基于本模组的通用触发器 `time_heals:event`，进度树：
+
+| 进度 | 类型 | 条件 |
+| --- | --- | --- |
+| 倾家荡产 | task（根） | 首次获得时序裁决器 |
+| 同归于尽 | challenge | 自毁的 1% 反噬把你的命一起带走 |
+| 神器的终焉 | challenge | 裁决器击杀混沌守卫（53000 混沌伤害） |
+| └ 谁在哭泣？ | goal | 目睹机器自毁、化为残骸 |
+| &nbsp;&nbsp;└ 回收废品 | challenge | 用刷子刷开残骸、刷出报废的神龙权杖 |
+| └ 1/700 | challenge | 拾取用不可破坏之剑合成后返还的 1 耐久之剑 |
+| 14次精准斩击 | goal | 破晶阶段摧毁全部 14 颗混沌水晶 |
+
+代码侧发放：
+
+```java
+TimeAdvancements.event(player, "event_name");          // 单个玩家
+TimeAdvancements.eventNearby(level, pos, 10, "name");  // 范围内玩家
+```
+
+### 7. 创造标签页
+
+创造模式物品栏新增独立标签页**时间工程**（`itemGroup.time_heals`），只放本模组注册的物品：
+时序裁决器、裁决器残骸、报废的神龙权杖。
+
+### 8. 内置指南
 
 基于 GuideME，内容位于 `assets/time_heals/time_heals_guide/`：
 
@@ -141,6 +177,7 @@ items/time-upgrade-template.md  时间锻造模板
 blocks/time-crystal-block.md    时间水晶块
 blocks/2x-time-crystal-block.md 2 重压缩时间水晶块
 blocks/verdict-device.md    时序裁决器
+items/time-heals-items.md   本模组物品
 effects/time-confusion.md   时间混乱
 mechanics/chaos-damage.md   混沌级伤害
 mechanics/time-acceleration.md  时间加速
@@ -206,7 +243,7 @@ GuideME、Jade、**JEI**（用于检查融合合成配方）。
 - 加速状态仅存在于内存，服务器重启后失效，需要重新施加；
 - 时序裁决器是一次性的，仪式结束即变为哭泣的黑曜石；
 - 附近没有混沌守卫时，裁决器的锁定/攻击阶段会空转，但机器照样消耗；
-- 裁决器的伤害写入为 50000；若你改过 DE 的 `guardianShield` / `guardianHealth` 配置，需要同步调整。
+- 裁决器的伤害写入为 53000；若你改过 DE 的 `guardianShield` / `guardianHealth` 配置，需要同步调整。
 
 ## 变更记录
 
@@ -221,7 +258,12 @@ GuideME、Jade、**JEI**（用于检查融合合成配方）。
 - 新增：底盘进度槽（绿→红）与柱子 14 层常驻圆环（客户端绘制）；
 - 新增：仪式音效与自定义字幕（时序裁决器：破晶/蓄能/锁定/攻击/裁决、混沌水晶：爆炸）；
 - 新增：一次性消耗——手持 64 个时间水晶启动，结束后自毁为哭泣的黑曜石；
-- 新增：指南「时序裁决器」页面；
+- 新增：指南「时序裁决器」「本模组物品」「成就」页面；
+- 新增：仪式期间机器免疫挖掘与爆炸，Jade 显示「仪式进行中，无法破坏」；
+- 新增：自毁后留下可刷的裁决器残骸，刷出报废的神龙权杖；
+- 新增：自毁时 1% 时序反噬（53000 伤害 + 专属死亡信息）；
+- 新增：7 条成就（倾家荡产 / 同归于尽 / 神器的终焉 / 谁在哭泣？/ 回收废品 / 1/700 / 14次精准斩击）；
+- 新增：创造模式独立标签页「时间工程」；
 - 新增：神龙级融合合成配方，按数据能源学 / Powah 的加载情况自动附加材料（四套互斥配方）；
 - 模型读取 `assets/time_heals/models/block/verdict_device_parts.json`，替换该 JSON 与贴图即可换模型；
 - 中央水晶：自旋 15°/秒、上下浮动总行程 1 格（周期 2 秒）。

@@ -24,7 +24,7 @@ KubeJS 注册的物品无法实现 Java 接口，因此本模组通过 Mixin 接
 ## 时序裁决器
 
 [时序裁决器](../blocks/verdict-device.md) 的攻击阶段同样使用混沌级伤害
-（`draconicevolution:chaos_implosion`），一次 50000 点，足以连护盾带本体一起打掉守卫。
+（`draconicevolution:chaos_implosion`），一次 53000 点，足以连护盾带本体一起打掉守卫。
 
 ## 白名单
 

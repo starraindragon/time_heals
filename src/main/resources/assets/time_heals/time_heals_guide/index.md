@@ -47,3 +47,4 @@ navigation:
 - [时间混乱](effects/time-confusion.md)
 - [混沌级伤害](mechanics/chaos-damage.md)
 - [时间加速](mechanics/time-acceleration.md)
+- [成就](mechanics/achievements.md)
