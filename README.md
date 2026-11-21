@@ -14,7 +14,7 @@ Items are registered by the pack's KubeJS scripts; this mod only supplies what K
 chaotic damage detection, the Time Confusion effect, block-entity time acceleration,
 and an in-game GuideME guide.
 
-- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.2.0`
+- Minecraft `1.21.1` · NeoForge `21.1.248+` · Mod ID `time_heals` · Version `1.2.1`
 
 ---
 
@@ -212,7 +212,7 @@ accelerationDisplayRange = 5.0
 ./gradlew build
 ```
 
-产物：`build/libs/time_heals-1.2.0.jar`
+产物：`build/libs/time_heals-1.2.1.jar`
 
 ### dev 运行约定
 
@@ -246,6 +246,11 @@ GuideME、Jade、**JEI**（用于检查融合合成配方）。
 - 裁决器的伤害写入为 53000；若你改过 DE 的 `guardianShield` / `guardianHealth` 配置，需要同步调整。
 
 ## 变更记录
+
+### 1.2.1
+
+- 修复：裁决器造成的伤害没有击杀者，FTB Quests 的「击杀生物」任务检测不到混沌守卫；
+- 改动：仪式启动时会记录启动玩家，裁决伤害归因到该玩家（离线时取附近最近玩家）。
 
 ### 1.2.0
 
