@@ -76,6 +76,8 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     private int elapsedTicks = 0;
     /** 是否已经打印过连接目标（避免刷屏）。 */
     private boolean loggedLinkTarget = false;
+    /** 启动仪式玩家的 UUID（用于把击杀算在玩家头上，供 FTB 任务检测）。 */
+    private java.util.UUID starterUuid = null;
     /** 合成时是否使用了「无法破坏 + 已标记」的时间之剑。 */
     private boolean usedUnbreakableSword = false;
     /** 剩余演示 tick；>0 表示仪式进行中。 */
@@ -194,6 +196,13 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
     }
 
     /** 消耗时间水晶启动仪式。 */
+    public void setStarter(net.minecraft.world.entity.player.Player player) {
+        if (player != null) {
+            this.starterUuid = player.getUUID();
+            setChanged();
+        }
+    }
+
     public void startRitual() {
         this.remainingTicks = RITUAL_TICKS;
         this.elapsedTicks = 0;
@@ -399,9 +408,15 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
                 .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
         var holder = registry.getHolder(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
                 "draconicevolution", "chaos_implosion")).orElse(null);
+        // 把这次伤害归因到启动仪式的玩家（FTB Quests 的击杀任务靠 source.getEntity 判定）
+        net.minecraft.world.entity.player.Player attacker = resolveStarter(server);
         net.minecraft.world.damagesource.DamageSource source = holder != null
-                ? new net.minecraft.world.damagesource.DamageSource(holder)
-                : server.damageSources().magic();
+                ? (attacker != null
+                        ? new net.minecraft.world.damagesource.DamageSource(holder, attacker)
+                        : new net.minecraft.world.damagesource.DamageSource(holder))
+                : (attacker != null
+                        ? server.damageSources().playerAttack(attacker)
+                        : server.damageSources().magic());
 
         living.invulnerableTime = 0;
         // 混沌守卫：护盾 16000 + 本体 1000（DE 默认值），
@@ -419,6 +434,20 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
             // 混沌守卫确由这次裁决伤害击杀 → 发放成就
             TimeAdvancements.eventNearby(server, worldPosition, 32.0D, "godslayer");
         }
+    }
+
+    /** 找到启动仪式的玩家；离线则退化为最近的玩家。 */
+    private net.minecraft.world.entity.player.Player resolveStarter(
+            net.minecraft.server.level.ServerLevel server) {
+        if (starterUuid != null) {
+            net.minecraft.world.entity.player.Player found =
+                    server.getPlayerByUUID(starterUuid);
+            if (found != null && found.isAlive()) {
+                return found;
+            }
+        }
+        return server.getNearestPlayer(worldPosition.getX() + 0.5D, worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D, 64.0D, false);
     }
 
     /** 附近是否还有存活的混沌水晶。 */
@@ -667,6 +696,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         tag.putFloat("progress", progress);
         tag.putInt("rings", crystalRings);
         tag.putBoolean("unbreakableSword", usedUnbreakableSword);
+        if (starterUuid != null) {
+            tag.putUUID("starter", starterUuid);
+        }
         tag.putInt("remaining", remainingTicks);
         tag.putInt("reset", resetTicks);
     }
@@ -679,6 +711,9 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         progress = tag.getFloat("progress");
         crystalRings = tag.getInt("rings");
         usedUnbreakableSword = tag.getBoolean("unbreakableSword");
+        if (tag.hasUUID("starter")) {
+            starterUuid = tag.getUUID("starter");
+        }
         hasAim = tag.getBoolean("hasAim");
         aimX = tag.getFloat("aimX");
         aimY = tag.getFloat("aimY");
@@ -693,10 +728,16 @@ public class VerdictDeviceBlockEntity extends BlockEntity {
         tag.putFloat("progress", progress);
         tag.putInt("rings", crystalRings);
         tag.putBoolean("unbreakableSword", usedUnbreakableSword);
+        if (starterUuid != null) {
+            tag.putUUID("starter", starterUuid);
+        }
         tag.putInt("phase", phase);
         tag.putInt("crystals", crystalsBroken);
         tag.putInt("rings", crystalRings);
         tag.putBoolean("unbreakableSword", usedUnbreakableSword);
+        if (starterUuid != null) {
+            tag.putUUID("starter", starterUuid);
+        }
         tag.putBoolean("hasAim", hasAim);
         tag.putFloat("aimX", aimX);
         tag.putFloat("aimY", aimY);

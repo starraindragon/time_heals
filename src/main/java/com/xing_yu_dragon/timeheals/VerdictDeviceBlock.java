@@ -110,6 +110,7 @@ public class VerdictDeviceBlock extends BaseEntityBlock {
         if (!player.getAbilities().instabuild) {
             held.shrink(64);
         }
+        device.setStarter(player);
         device.startRitual();
     }
 

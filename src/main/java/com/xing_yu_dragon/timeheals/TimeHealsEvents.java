@@ -138,6 +138,48 @@ public final class TimeHealsEvents {
         }
     }
 
+    /** 压力测试：/timeheals stress <台数> —— 在玩家周围摆一圈机器并立即开仪式。 */
+    @SubscribeEvent
+    public static void onRegisterStressCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("timeheals")
+                .then(net.minecraft.commands.Commands.literal("stress")
+                        .requires(source -> source.hasPermission(2))
+                        .then(net.minecraft.commands.Commands.argument("count",
+                                        com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 32))
+                                .executes(context -> {
+                                    int count = com.mojang.brigadier.arguments.IntegerArgumentType
+                                            .getInteger(context, "count");
+                                    var player = context.getSource().getPlayerOrException();
+                                    var level = (net.minecraft.server.level.ServerLevel) player.level();
+                                    var center = player.blockPosition();
+                                    int placed = 0;
+                                    for (int i = 0; i < count; i++) {
+                                        double angle = (Math.PI * 2.0D / count) * i;
+                                        int x = center.getX() + (int) Math.round(Math.cos(angle) * 8.0D);
+                                        int z = center.getZ() + (int) Math.round(Math.sin(angle) * 8.0D);
+                                        var pos = new net.minecraft.core.BlockPos(x, center.getY(), z);
+                                        // 底座需要 3x3 平坦空间：先清空再放置控制器
+                                        for (int dx = -1; dx <= 1; dx++) {
+                                            for (int dz = -1; dz <= 1; dz++) {
+                                                level.setBlockAndUpdate(pos.offset(dx, 0, dz),
+                                                        net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                                            }
+                                        }
+                                        level.setBlockAndUpdate(pos,
+                                                TimeHeals.VERDICT_DEVICE.get().defaultBlockState());
+                                        if (level.getBlockEntity(pos) instanceof VerdictDeviceBlockEntity device) {
+                                            device.setStarter(player);
+                                            device.startRitual();
+                                            placed++;
+                                        }
+                                    }
+                                    int total = placed;
+                                    context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component
+                                            .literal("已启动 " + total + " 台裁决器进行压力测试"), false);
+                                    return placed;
+                                }))));
+    }
+
     /** 调试：/timeheals backlash [self] —— 在脚下触发一次时序反噬。 */
     @SubscribeEvent
     public static void onRegisterBacklashCommand(RegisterCommandsEvent event) {
